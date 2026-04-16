@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv \"dashboard.html\" \"01_보고서/\")",
+      "Bash(mv \"meeting-result.html\" \"01_보고서/\")",
+      "Bash(mv \"김비서-데이터/매출데이터.csv\" \"01_보고서/\")",
+      "Bash(mv \"김비서-데이터/프로젝트현황.csv\" \"01_보고서/\")",
+      "Bash(mv \"김비서-데이터/업무목록.csv\" \"03_업무/\")",
+      "Bash(mv \"김비서-데이터/주간일정.txt\" \"03_업무/\")",
+      "Bash(rm -rf \"김비서-데이터\")",
+      "Bash(mv \"정리해줘\" \"04_기타/\")",
+      "WebFetch(domain:www.subtrac.kr)",
+      "Bash(start \"C:\\\\Users\\\\user\\\\Desktop\\\\워크숍-실습-20260409T111027Z-3-001\\\\워크숍-실습\\\\01_보고서\\\\dashboard.html\")",
+      "Bash(cp chart.html \"01_보고서/\")",
+      "Bash(cp diagram.svg \"01_보고서/\")",
+      "Bash(cp report.html \"01_보고서/\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\김비서\")",
+      "Read(//c/Users/user/.claude/skills/**)",
+      "Bash(python scripts/generate_briefing.py)",
+      "Bash(python3 scripts/generate_briefing.py)",
+      "Read(//c/Users/user/.claude/skills/김비서/**)",
+      "Bash(python3 -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(python generate_briefing.py)",
+      "Bash(python 'C:\\\\Users\\\\user\\\\.claude\\\\skills\\\\김비서\\\\scripts\\\\generate_briefing.py')",
+      "Bash(python -m py_compile \"/c/Users/user/.claude/skills/김비서/scripts/generate_briefing.py\")",
+      "Bash(node generate_briefing.js)",
+      "WebFetch(domain:docs.google.com)",
+      "WebFetch(domain:doc-08-78-sheets.googleusercontent.com)",
+      "Bash(python3 -m pip list)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import gspread; print\\('gspread installed successfully'\\)\")",
+      "Bash(python3 -m pip install --user gspread google-auth-oauthlib google-auth-httplib2)",
+      "Bash(python3)",
+      "Bash(python3 -c \"import sys; print\\(sys.executable\\)\")",
+      "Bash(curl --version)",
+      "Read(//tmp/**)",
+      "WebFetch(domain:github.com)"
+    ]
+  }
+}

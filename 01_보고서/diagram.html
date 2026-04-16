@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>업무 프로세스</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: #f5f7fa;
+      color: #2c3e50;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* ── 뒤로가기 버튼 ── */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .back-button:hover {
+      transform: translateX(-4px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ── 헤더 ── */
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a5490;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #7f8c8d;
+    }
+
+    /* ── SVG 컨테이너 ── */
+    .svg-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      overflow: auto;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #ecf0f1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ── 뒤로가기 버튼 ── -->
+  <a href="dashboard.html" class="back-button">← 대시보드로 돌아가기</a>
+
+  <!-- ── 헤더 ── -->
+  <header>
+    <h1>📊 업무 프로세스</h1>
+    <p class="subtitle">프로젝트 라이프사이클 및 진행 현황</p>
+  </header>
+
+  <!-- ── SVG 다이어그램 ── -->
+  <div class="svg-container">
+    <svg viewBox="0 0 1200 900" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- 화살표 마커 -->
+        <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="11" refY="6" orient="auto">
+          <polygon points="0 0, 12 6, 0 12" fill="#3498db" />
+        </marker>
+
+        <!-- 그라데이션 - 파란 계열 -->
+        <linearGradient id="gradBlue1" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#5DADE2;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#3498db;stop-opacity:1" />
+        </linearGradient>
+
+        <linearGradient id="gradBlue2" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#2E86C1;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#2874A6;stop-opacity:1" />
+        </linearGradient>
+
+        <linearGradient id="gradBlue3" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#1B4965;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#0B1929;stop-opacity:1" />
+        </linearGradient>
+
+        <linearGradient id="gradLight" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#EBF5FB;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#D6EAF8;stop-opacity:1" />
+        </linearGradient>
+
+        <!-- 그림자 -->
+        <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.2"/>
+        </filter>
+
+        <filter id="shadowLight" x="-50%" y="-50%" width="200%" height="200%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.1"/>
+        </filter>
+      </defs>
+
+      <!-- 배경 -->
+      <rect width="1200" height="900" fill="#f5f7fa" rx="12"/>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           섹션 1: 프로세스 플로우 (상단)
+           ═══════════════════════════════════════════════════════════ -->
+
+      <!-- 섹션 제목 -->
+      <text x="600" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#1a5490">프로젝트 라이프사이클</text>
+
+      <!-- 프로세스 박스 배경 -->
+      <rect x="30" y="60" width="1140" height="140" rx="12" fill="#fff" stroke="#e0e8f0" stroke-width="2"/>
+
+      <!-- 화살표 1 (기획 → 제작) -->
+      <line x1="220" y1="130" x2="300" y2="130" stroke="#3498db" stroke-width="3" marker-end="url(#arrowBlue)" stroke-linecap="round"/>
+
+      <!-- 화살표 2 (제작 → 검토) -->
+      <line x1="500" y1="130" x2="580" y2="130" stroke="#3498db" stroke-width="3" marker-end="url(#arrowBlue)" stroke-linecap="round"/>
+
+      <!-- 화살표 3 (검토 → 배포) -->
+      <line x1="780" y1="130" x2="860" y2="130" stroke="#3498db" stroke-width="3" marker-end="url(#arrowBlue)" stroke-linecap="round"/>
+
+      <!-- 화살표 4 (배포 → 분석) -->
+      <line x1="1060" y1="130" x2="1140" y2="130" stroke="#3498db" stroke-width="3" marker-end="url(#arrowBlue)" stroke-linecap="round"/>
+
+      <!-- ① 기획 -->
+      <g filter="url(#shadow)">
+        <rect x="130" y="80" width="140" height="100" rx="14" fill="url(#gradBlue1)" stroke="#2874A6" stroke-width="2"/>
+        <circle cx="160" cy="95" r="20" fill="#fff" opacity="0.2"/>
+        <text x="200" y="125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">기획</text>
+        <text x="200" y="145" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">Planning</text>
+      </g>
+
+      <!-- ② 제작 -->
+      <g filter="url(#shadow)">
+        <rect x="310" y="80" width="140" height="100" rx="14" fill="url(#gradBlue2)" stroke="#2874A6" stroke-width="2"/>
+        <circle cx="340" cy="95" r="20" fill="#fff" opacity="0.2"/>
+        <text x="380" y="125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">제작</text>
+        <text x="380" y="145" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">Production</text>
+      </g>
+
+      <!-- ③ 검토 -->
+      <g filter="url(#shadow)">
+        <rect x="590" y="80" width="140" height="100" rx="14" fill="url(#gradBlue2)" stroke="#2874A6" stroke-width="2"/>
+        <circle cx="620" cy="95" r="20" fill="#fff" opacity="0.2"/>
+        <text x="660" y="125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">검토</text>
+        <text x="660" y="145" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">Review</text>
+      </g>
+
+      <!-- ④ 배포 -->
+      <g filter="url(#shadow)">
+        <rect x="870" y="80" width="140" height="100" rx="14" fill="url(#gradBlue1)" stroke="#2874A6" stroke-width="2"/>
+        <circle cx="900" cy="95" r="20" fill="#fff" opacity="0.2"/>
+        <text x="940" y="125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">배포</text>
+        <text x="940" y="145" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">Deploy</text>
+      </g>
+
+      <!-- ⑤ 분석 -->
+      <g filter="url(#shadow)">
+        <rect x="1050" y="80" width="140" height="100" rx="14" fill="url(#gradBlue3)" stroke="#2874A6" stroke-width="2"/>
+        <circle cx="1080" cy="95" r="20" fill="#fff" opacity="0.2"/>
+        <text x="1120" y="125" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#fff">분석</text>
+        <text x="1120" y="145" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">Analysis</text>
+      </g>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           섹션 2: 진행률 그래프 (상단 우측)
+           ═══════════════════════════════════════════════════════════ -->
+
+      <g filter="url(#shadowLight)">
+        <!-- 배경 -->
+        <rect x="30" y="220" width="380" height="160" rx="12" fill="#fff" stroke="#e0e8f0" stroke-width="1"/>
+
+        <!-- 제목 -->
+        <text x="50" y="245" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1a5490">전체 진행 상황</text>
+
+        <!-- 진행률 1 -->
+        <rect x="50" y="260" width="150" height="16" rx="8" fill="#ecf0f1"/>
+        <rect x="50" y="260" width="120" height="16" rx="8" fill="url(#gradBlue1)"/>
+        <text x="220" y="272" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2c3e50">80%</text>
+
+        <!-- 진행률 2 -->
+        <rect x="50" y="285" width="150" height="16" rx="8" fill="#ecf0f1"/>
+        <rect x="50" y="285" width="105" height="16" rx="8" fill="url(#gradBlue2)"/>
+        <text x="220" y="297" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2c3e50">70%</text>
+
+        <!-- 진행률 3 -->
+        <rect x="50" y="310" width="150" height="16" rx="8" fill="#ecf0f1"/>
+        <rect x="50" y="310" width="135" height="16" rx="8" fill="url(#gradBlue1)"/>
+        <text x="220" y="322" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#2c3e50">90%</text>
+
+        <!-- 레이블 -->
+        <text x="50" y="255" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">기획</text>
+        <text x="50" y="280" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">제작</text>
+        <text x="50" y="305" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">검토</text>
+      </g>
+
+      <!-- 주요 통계 텍스트 -->
+      <text x="600" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">📊 핵심 지표</text>
+      <text x="600" y="410" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#555">생산성: 85% | 품질: 90% | 일정 준수: 80% | 비용 효율: 95%</text>
+    </svg>
+  </div>
+
+  <!-- ── 푸터 ── -->
+  <footer>
+    <p>프로젝트 라이프사이클의 5단계 프로세스와 실시간 진행 현황을 시각화합니다.</p>
+  </footer>
+</div>
+
+</body>
+</html>

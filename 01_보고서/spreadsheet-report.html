@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스프레드시트 분석 보고서</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
+      color: #2c3e50;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── 뒤로가기 버튼 ── */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .back-button:hover {
+      transform: translateX(-4px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #1a5490 0%, #2980b9 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .header-subtitle {
+      font-size: 15px;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    /* ── 섹션 스타일 ── */
+    section {
+      background: white;
+      padding: 32px;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-left: 4px solid #3498db;
+    }
+
+    section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a5490;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── KPI 카드 그룹 ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #ecf0f1 100%);
+      padding: 24px;
+      border-radius: 12px;
+      border-left: 4px solid #3498db;
+      transition: all 0.3s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(52, 152, 219, 0.15);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      color: #7f8c8d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a5490;
+    }
+
+    .kpi-change {
+      font-size: 12px;
+      color: #27ae60;
+      margin-top: 8px;
+    }
+
+    /* ── 테이블 스타일 ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th {
+      background: linear-gradient(135deg, #1a5490 0%, #2874a6 100%);
+      color: white;
+      padding: 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank {
+      font-weight: 700;
+      color: #e74c3c;
+      font-size: 18px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-primary {
+      background: #d6eaf8;
+      color: #1a5490;
+    }
+
+    .badge-success {
+      background: #d5f4e6;
+      color: #27ae60;
+    }
+
+    /* ── 차트 컨테이너 ── */
+    .chart-container {
+      margin-bottom: 32px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* ── 하이라이트 박스 ── */
+    .highlight-box {
+      background: linear-gradient(135deg, #ecf0f1 0%, #f5f7fa 100%);
+      padding: 20px;
+      border-left: 4px solid #e74c3c;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+
+    .highlight-box strong {
+      color: #e74c3c;
+    }
+
+    /* ── 분석 리스트 ── */
+    .analysis-list {
+      list-style: none;
+    }
+
+    .analysis-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .analysis-list li:before {
+      content: "▸";
+      color: #3498db;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ── 풋터 ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #ecf0f1;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      section {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ── 뒤로가기 버튼 ── -->
+  <a href="dashboard.html" class="back-button">← 대시보드로 돌아가기</a>
+
+  <!-- ── 헤더 ── -->
+  <header>
+    <h1>📊 스프레드시트 데이터 분석</h1>
+    <p class="header-subtitle">판매 데이터 종합 분석 보고서 | 2026년 1월 5일 ~ 2월 10일</p>
+  </header>
+
+  <!-- ── 섹션 1: 데이터 요약 ── -->
+  <section>
+    <h2>📈 핵심 데이터 요약</h2>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">총 매출액</div>
+        <div class="kpi-value">75,187,000</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">₩ (1월~2월)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">판매 거래 수</div>
+        <div class="kpi-value">30</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">건</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">평균 거래액</div>
+        <div class="kpi-value">2,506,233</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">₩ 거래당</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">판매 지역</div>
+        <div class="kpi-value">3</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">서울, 부산, 대구</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 섹션 2: 제품별 성과 ── -->
+  <section>
+    <h2>🏆 제품별 판매 성과</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>제품명</th>
+          <th>카테고리</th>
+          <th>판매액</th>
+          <th>점유율</th>
+          <th>거래 수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rank">1</span></td>
+          <td><strong>무선 이어폰</strong></td>
+          <td><span class="badge badge-primary">전자기기</span></td>
+          <td><strong>24,630,000</strong></td>
+          <td>32.8%</td>
+          <td>7회</td>
+        </tr>
+        <tr>
+          <td><span class="rank">2</span></td>
+          <td><strong>블루투스 스피커</strong></td>
+          <td><span class="badge badge-primary">전자기기</span></td>
+          <td><strong>20,740,000</strong></td>
+          <td>27.6%</td>
+          <td>6회</td>
+        </tr>
+        <tr>
+          <td><span class="rank">3</span></td>
+          <td><strong>보조배터리</strong></td>
+          <td><span class="badge badge-primary">전자기기</span></td>
+          <td><strong>12,420,000</strong></td>
+          <td>16.5%</td>
+          <td>6회</td>
+        </tr>
+        <tr>
+          <td><span class="rank">4</span></td>
+          <td><strong>에코백</strong></td>
+          <td><span class="badge badge-success">생활용품</span></td>
+          <td><strong>8,920,000</strong></td>
+          <td>11.9%</td>
+          <td>5회</td>
+        </tr>
+        <tr>
+          <td><span class="rank">5</span></td>
+          <td><strong>무선 충전기</strong></td>
+          <td><span class="badge badge-primary">전자기기</span></td>
+          <td><strong>5,280,000</strong></td>
+          <td>7.0%</td>
+          <td>3회</td>
+        </tr>
+        <tr>
+          <td><span class="rank">6</span></td>
+          <td><strong>텀블러</strong></td>
+          <td><span class="badge badge-success">생활용품</span></td>
+          <td><strong>3,197,000</strong></td>
+          <td>4.3%</td>
+          <td>3회</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>💡 핵심 인사이트:</strong> 전자기기 카테고리가 전체 매출의 83.9%를 차지하며, 무선 이어폰이 단일 제품 중 최고의 판매 성과를 기록했습니다.
+    </div>
+  </section>
+
+  <!-- ── 섹션 3: 지역별 분석 ── -->
+  <section>
+    <h2>🗺️ 지역별 판매 현황</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>지역</th>
+          <th>판매액</th>
+          <th>점유율</th>
+          <th>거래 수</th>
+          <th>평균 거래액</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rank">1</span></td>
+          <td><strong>서울</strong></td>
+          <td><strong>32,315,000</strong></td>
+          <td>43.0%</td>
+          <td>13회</td>
+          <td>2,485,000</td>
+        </tr>
+        <tr>
+          <td><span class="rank">2</span></td>
+          <td><strong>대구</strong></td>
+          <td><strong>21,682,000</strong></td>
+          <td>28.8%</td>
+          <td>9회</td>
+          <td>2,408,000</td>
+        </tr>
+        <tr>
+          <td><span class="rank">3</span></td>
+          <td><strong>부산</strong></td>
+          <td><strong>21,190,000</strong></td>
+          <td>28.2%</td>
+          <td>8회</td>
+          <td>2,649,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>📌 지역 전략:</strong> 서울이 약 43%의 점유율로 주요 시장이며, 부산의 평균 거래액이 가장 높아 고부가가치 거래가 이루어지고 있습니다.
+    </div>
+  </section>
+
+  <!-- ── 섹션 4: 카테고리 분석 ── -->
+  <section>
+    <h2>📦 카테고리별 구성</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>카테고리</th>
+          <th>판매액</th>
+          <th>점유율</th>
+          <th>제품 수</th>
+          <th>거래 수</th>
+          <th>평균 단가</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-primary">전자기기</span></td>
+          <td><strong>63,070,000</strong></td>
+          <td>83.9%</td>
+          <td>4개</td>
+          <td>22회</td>
+          <td>₩71,250</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">생활용품</span></td>
+          <td><strong>12,117,000</strong></td>
+          <td>16.1%</td>
+          <td>2개</td>
+          <td>8회</td>
+          <td>₩30,075</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <strong>🎯 사업 집중:</strong> 전자기기가 주요 수익원이며, 생활용품은 보조 수익원으로 기능하고 있습니다. 전자기기 제품의 평균 단가는 약 71,250원으로 생활용품의 약 2.4배 수준입니다.
+    </div>
+  </section>
+
+  <!-- ── 섹션 5: 월별 트렌드 ── -->
+  <section>
+    <h2>📊 월별 판매 추이</h2>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">1월 매출</div>
+        <div class="kpi-value">42,427,000</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">₩ 1월 5일~31일</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">2월 매출</div>
+        <div class="kpi-value">32,760,000</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">₩ 2월 1일~10일 (집계중)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">월간 비교</div>
+        <div class="kpi-value">-22.8%</div>
+        <div style="font-size: 12px; color: #e74c3c; margin-top: 8px;">1월 대비 2월</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">1월 거래 수</div>
+        <div class="kpi-value">17</div>
+        <div style="font-size: 12px; color: #7f8c8d; margin-top: 8px;">건</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <div class="chart-title">📈 월별 매출 비교</div>
+      <canvas id="monthlyChart" width="600" height="300"></canvas>
+    </div>
+
+    <div class="highlight-box">
+      <strong>⚠️ 주의:</strong> 2월은 데이터 집계가 진행 중(1월 5일~2월 10일 비교)이므로, 전체 2월 매출은 더 높을 것으로 예상됩니다. 월별 동향 분석 시 이를 고려해야 합니다.
+    </div>
+  </section>
+
+  <!-- ── 섹션 6: 가격대별 분석 ── -->
+  <section>
+    <h2>💰 가격대별 제품 분포</h2>
+
+    <ul class="analysis-list">
+      <li><strong>프리미엄 (₩100,000 이상):</strong> 무선 이어폰(₩120,000) - 판매 성과 최고</li>
+      <li><strong>고가 (₩80,000~99,999):</strong> 블루투스 스피커(₩95,000) - 2순위 제품</li>
+      <li><strong>중가 (₩50,000~79,999):</strong> 보조배터리(₩68,000), 무선 충전기(₩62,000)</li>
+      <li><strong>저가 (₩15,000~49,999):</strong> 에코백(₩32,000), 텀블러(₩15,000) - 보조 상품</li>
+    </ul>
+
+    <div class="chart-container">
+      <div class="chart-title">제품별 판매액 순위</div>
+      <canvas id="productChart" width="600" height="300"></canvas>
+    </div>
+  </section>
+
+  <!-- ── 섹션 7: 주요 발견사항 및 권장사항 ── -->
+  <section>
+    <h2>🔍 주요 발견사항 및 전략 제안</h2>
+
+    <h3 style="font-size: 16px; font-weight: 700; color: #1a5490; margin-top: 20px; margin-bottom: 12px;">✅ 강점</h3>
+    <ul class="analysis-list">
+      <li><strong>제품 포트폴리오 강력함:</strong> 무선 이어폰과 블루투스 스피커로 매출의 60%+ 확보</li>
+      <li><strong>지역 다각화:</strong> 서울, 부산, 대구 3개 지역에서 균형잡힌 판매 기록</li>
+      <li><strong>높은 평균 단가:</strong> 전자기기 중심의 포트폴리오로 높은 수익성 유지</li>
+      <li><strong>안정적 거래:</strong> 월평균 15회 이상의 정기적 거래 확보</li>
+    </ul>
+
+    <h3 style="font-size: 16px; font-weight: 700; color: #1a5490; margin-top: 24px; margin-bottom: 12px;">🚀 개선 기회</h3>
+    <ul class="analysis-list">
+      <li><strong>월별 추이 개선:</strong> 1월 대비 2월 매출 감소세 → 계절성 분석 및 마케팅 강화 필요</li>
+      <li><strong>생활용품 강화:</strong> 생활용품 매출이 16%에 불과 → 신규 제품 개발 또는 마케팅 투자</li>
+      <li><strong>부산/대구 성장:</strong> 서울의 43% 점유율 대비 부산/대구 각각 28% → 지역별 맞춤 전략</li>
+      <li><strong>무선 충전기 및 텀블러 활성화:</strong> 판매액 비중이 낮은 제품의 판매 촉진 필요</li>
+    </ul>
+
+    <h3 style="font-size: 16px; font-weight: 700; color: #1a5490; margin-top: 24px; margin-bottom: 12px;">📋 액션 플랜</h3>
+    <ul class="analysis-list">
+      <li><strong>단기 (1개월):</strong> 상위 2개 제품(무선 이어폰, 블루투스 스피커) 판매 확대 캠페인</li>
+      <li><strong>중기 (3개월):</strong> 생활용품 라인 확대 및 B2B 채널 개발</li>
+      <li><strong>장기 (6개월):</strong> 부산/대구 지역 전담 영업팀 구성 및 지역 특화 마케팅</li>
+      <li><strong>지속:</strong> 월별 판매 현황을 분석하여 트렌드 모니터링</li>
+    </ul>
+  </section>
+
+  <!-- ── 푸터 ── -->
+  <footer>
+    <p>데이터 분석 기간: 2026년 1월 5일 ~ 2월 10일 | 보고서 생성일: 2026년 4월 9일</p>
+  </footer>
+</div>
+
+<!-- Canvas 차트 스크립트 -->
+<script>
+  // 월별 매출 비교 차트
+  const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+  const monthlyCanvas = document.getElementById('monthlyChart');
+  const dpr = window.devicePixelRatio || 1;
+
+  monthlyCanvas.width = monthlyCanvas.offsetWidth * dpr;
+  monthlyCanvas.height = 300 * dpr;
+  monthlyCtx.scale(dpr, dpr);
+
+  const monthlyWidth = monthlyCanvas.offsetWidth / dpr;
+  const monthlyHeight = 300;
+
+  // 배경
+  monthlyCtx.fillStyle = '#fff';
+  monthlyCtx.fillRect(0, 0, monthlyWidth, monthlyHeight);
+
+  // 축
+  monthlyCtx.strokeStyle = '#e0e0e0';
+  monthlyCtx.lineWidth = 1;
+  monthlyCtx.beginPath();
+  monthlyCtx.moveTo(60, 30);
+  monthlyCtx.lineTo(60, monthlyHeight - 50);
+  monthlyCtx.stroke();
+
+  monthlyCtx.beginPath();
+  monthlyCtx.moveTo(60, monthlyHeight - 50);
+  monthlyCtx.lineTo(monthlyWidth - 30, monthlyHeight - 50);
+  monthlyCtx.stroke();
+
+  // 축 라벨
+  monthlyCtx.fillStyle = '#7f8c8d';
+  monthlyCtx.font = '12px sans-serif';
+  monthlyCtx.textAlign = 'center';
+  monthlyCtx.fillText('1월', 200, monthlyHeight - 25);
+  monthlyCtx.fillText('2월', 380, monthlyHeight - 25);
+
+  monthlyCtx.textAlign = 'right';
+  monthlyCtx.font = '11px sans-serif';
+  for (let i = 0; i <= 5; i++) {
+    const value = i * 10;
+    const y = monthlyHeight - 50 - (i * 50);
+    monthlyCtx.fillText(value + '백만', 50, y + 4);
+  }
+
+  // 막대 그래프
+  const barWidth = 80;
+  const months = [
+    { label: '1월', value: 42.427 },
+    { label: '2월', value: 32.760 }
+  ];
+
+  months.forEach((month, idx) => {
+    const x = 150 + idx * 180;
+    const barHeight = month.value / 0.5;
+
+    // 그라데이션
+    const gradient = monthlyCtx.createLinearGradient(x, monthlyHeight - 50 - barHeight, x, monthlyHeight - 50);
+    gradient.addColorStop(0, '#3498db');
+    gradient.addColorStop(1, '#2980b9');
+
+    monthlyCtx.fillStyle = gradient;
+    monthlyCtx.fillRect(x - barWidth / 2, monthlyHeight - 50 - barHeight, barWidth, barHeight);
+
+    // 값 표시
+    monthlyCtx.fillStyle = '#1a5490';
+    monthlyCtx.font = 'bold 13px sans-serif';
+    monthlyCtx.textAlign = 'center';
+    monthlyCtx.fillText(month.value.toFixed(1) + '백만', x, monthlyHeight - 50 - barHeight - 10);
+  });
+
+  // 제품별 판매액 차트
+  const productCtx = document.getElementById('productChart').getContext('2d');
+  const productCanvas = document.getElementById('productChart');
+
+  productCanvas.width = productCanvas.offsetWidth * dpr;
+  productCanvas.height = 300 * dpr;
+  productCtx.scale(dpr, dpr);
+
+  const productWidth = productCanvas.offsetWidth / dpr;
+  const productHeight = 300;
+
+  // 배경
+  productCtx.fillStyle = '#fff';
+  productCtx.fillRect(0, 0, productWidth, productHeight);
+
+  // 축
+  productCtx.strokeStyle = '#e0e0e0';
+  productCtx.lineWidth = 1;
+  productCtx.beginPath();
+  productCtx.moveTo(180, 30);
+  productCtx.lineTo(180, productHeight - 50);
+  productCtx.stroke();
+
+  productCtx.beginPath();
+  productCtx.moveTo(180, productHeight - 50);
+  productCtx.lineTo(productWidth - 30, productHeight - 50);
+  productCtx.stroke();
+
+  // 축 라벨 (Y축)
+  productCtx.fillStyle = '#7f8c8d';
+  productCtx.font = '11px sans-serif';
+  productCtx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const value = i * 5;
+    const y = productHeight - 50 - (i * 50);
+    productCtx.fillText(value + '백만', 170, y + 4);
+  }
+
+  // 제품 데이터
+  const products = [
+    { name: '무선\n이어폰', value: 24.63, color: '#e74c3c' },
+    { name: '블루투스\n스피커', value: 20.74, color: '#3498db' },
+    { name: '보조\n배터리', value: 12.42, color: '#f39c12' },
+    { name: '에코백', value: 8.92, color: '#27ae60' },
+    { name: '무선\n충전기', value: 5.28, color: '#9b59b6' },
+    { name: '텀블러', value: 3.197, color: '#1abc9c' }
+  ];
+
+  const barSpacing = (productWidth - 220) / products.length;
+
+  products.forEach((product, idx) => {
+    const x = 200 + idx * barSpacing + barSpacing / 2;
+    const barHeight = product.value / 0.5;
+
+    productCtx.fillStyle = product.color;
+    productCtx.globalAlpha = 0.8;
+    productCtx.fillRect(x - 25, productHeight - 50 - barHeight, 50, barHeight);
+    productCtx.globalAlpha = 1;
+
+    // 제품명
+    productCtx.fillStyle = '#2c3e50';
+    productCtx.font = '11px sans-serif';
+    productCtx.textAlign = 'center';
+    productCtx.fillText(product.name, x, productHeight - 25);
+
+    // 값
+    productCtx.fillStyle = '#1a5490';
+    productCtx.font = 'bold 11px sans-serif';
+    productCtx.fillText(product.value.toFixed(1), x, productHeight - 50 - barHeight - 8);
+  });
+</script>
+
+</body>
+</html>

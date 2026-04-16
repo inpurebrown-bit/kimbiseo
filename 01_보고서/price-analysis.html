@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>평균 가격 분석</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
+      color: #2c3e50;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── 뒤로가기 버튼 ── */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 24px;
+      transition: all 0.2s;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .back-button:hover {
+      transform: translateX(-4px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      color: white;
+      padding: 40px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .header-subtitle {
+      font-size: 15px;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+
+    /* ── 평균 하이라이트 ── */
+    .average-highlight {
+      background: white;
+      padding: 32px;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-left: 6px solid #e74c3c;
+      text-align: center;
+    }
+
+    .average-label {
+      font-size: 14px;
+      color: #7f8c8d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .average-value {
+      font-size: 48px;
+      font-weight: 900;
+      color: #e74c3c;
+      margin-bottom: 8px;
+    }
+
+    .average-description {
+      font-size: 14px;
+      color: #555;
+    }
+
+    /* ── 통계 그리드 ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-top: 4px solid #3498db;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #7f8c8d;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: #2c3e50;
+    }
+
+    /* ── 테이블 스타일 ── */
+    .table-section {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+      overflow-x: auto;
+    }
+
+    .table-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a5490;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      background: linear-gradient(135deg, #1a5490 0%, #2874a6 100%);
+      color: white;
+      padding: 14px;
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .above-average {
+      color: #e74c3c;
+      font-weight: 700;
+      background: #fadbd8;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .below-average {
+      color: #27ae60;
+      font-weight: 700;
+      background: #d5f4e6;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .price-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .price-high {
+      background: #fadbd8;
+      color: #c0392b;
+    }
+
+    .price-low {
+      background: #d5f4e6;
+      color: #1e8449;
+    }
+
+    /* ── 요약 섹션 ── */
+    .summary-section {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-left: 6px solid #27ae60;
+      margin-bottom: 24px;
+    }
+
+    .summary-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a5490;
+      margin-bottom: 16px;
+    }
+
+    .summary-list {
+      list-style: none;
+    }
+
+    .summary-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #ecf0f1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .summary-list li:last-child {
+      border-bottom: none;
+    }
+
+    .summary-list strong {
+      color: #2c3e50;
+    }
+
+    .summary-value {
+      font-weight: 700;
+      color: #e74c3c;
+    }
+
+    /* ── 필터 컨트롤 ── */
+    .filter-controls {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      border-color: #3498db;
+      color: #3498db;
+    }
+
+    .filter-btn.active {
+      background: #3498db;
+      color: white;
+      border-color: #3498db;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #ecf0f1;
+    }
+
+    @media (max-width: 768px) {
+      table {
+        font-size: 11px;
+      }
+      th, td {
+        padding: 8px;
+      }
+      .average-value {
+        font-size: 36px;
+      }
+      .filter-controls {
+        flex-direction: column;
+      }
+      .filter-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ── 뒤로가기 버튼 ── -->
+  <a href="dashboard.html" class="back-button">← 대시보드로 돌아가기</a>
+
+  <!-- ── 헤더 ── -->
+  <header>
+    <h1>💰 평균 가격 분석</h1>
+    <p class="header-subtitle">전체 제품 단가 비교 및 분석 | 2026년 1월 5일 ~ 2월 10일</p>
+  </header>
+
+  <!-- ── 평균 가격 하이라이트 ── -->
+  <div class="average-highlight">
+    <div class="average-label">📊 전체 평균 단가</div>
+    <div class="average-value">₩51,500</div>
+    <div class="average-description">30개 거래의 단가 평균값 | 총합: 1,545,000원</div>
+  </div>
+
+  <!-- ── 통계 ── -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">평균 이상 제품</div>
+      <div class="stat-value">2종</div>
+      <p style="font-size: 11px; color: #7f8c8d; margin-top: 8px;">무선이어폰, 블루투스스피커</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">평균 이하 제품</div>
+      <div class="stat-value">4종</div>
+      <p style="font-size: 11px; color: #7f8c8d; margin-top: 8px;">보조배터리, 충전기, 텀블러, 에코백</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">최고 단가</div>
+      <div class="stat-value">₩120,000</div>
+      <p style="font-size: 11px; color: #7f8c8d; margin-top: 8px;">블루투스 스피커 (+68,500)</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">최저 단가</div>
+      <div class="stat-value">₩15,000</div>
+      <p style="font-size: 11px; color: #7f8c8d; margin-top: 8px;">에코백 (-36,500)</p>
+    </div>
+  </div>
+
+  <!-- ── 제품별 가격 비교 ── -->
+  <div class="table-section">
+    <h2>📋 제품별 가격 비교</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>제품명</th>
+          <th>카테고리</th>
+          <th>단가</th>
+          <th>평균 대비</th>
+          <th>평가</th>
+          <th>거래수</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>블루투스 스피커</strong></td>
+          <td><span class="price-badge price-high">전자기기</span></td>
+          <td><strong>₩120,000</strong></td>
+          <td>+₩68,500</td>
+          <td><span class="above-average">평균 이상</span></td>
+          <td>4회</td>
+        </tr>
+        <tr>
+          <td><strong>무선 이어폰</strong></td>
+          <td><span class="price-badge price-high">전자기기</span></td>
+          <td><strong>₩89,000</strong></td>
+          <td>+₩37,500</td>
+          <td><span class="above-average">평균 이상</span></td>
+          <td>6회</td>
+        </tr>
+        <tr>
+          <td><strong>무선 충전기</strong></td>
+          <td><span class="price-badge price-high">전자기기</span></td>
+          <td><strong>₩45,000</strong></td>
+          <td>-₩6,500</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>3회</td>
+        </tr>
+        <tr>
+          <td><strong>보조배터리</strong></td>
+          <td><span class="price-badge price-high">전자기기</span></td>
+          <td><strong>₩35,000</strong></td>
+          <td>-₩16,500</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>6회</td>
+        </tr>
+        <tr>
+          <td><strong>텀블러</strong></td>
+          <td><span class="price-badge price-low">생활용품</span></td>
+          <td><strong>₩25,000</strong></td>
+          <td>-₩26,500</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>5회</td>
+        </tr>
+        <tr>
+          <td><strong>에코백</strong></td>
+          <td><span class="price-badge price-low">생활용품</span></td>
+          <td><strong>₩15,000</strong></td>
+          <td>-₩36,500</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>3회</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 가격 분포 분석 ── -->
+  <div class="table-section">
+    <h2>📊 가격 분포 분석</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>가격대</th>
+          <th>범위</th>
+          <th>제품</th>
+          <th>평가</th>
+          <th>거래 건수</th>
+          <th>비중</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>프리미엄</strong></td>
+          <td>₩100,000 이상</td>
+          <td>블루투스 스피커 (₩120,000)</td>
+          <td><span class="above-average">평균 이상</span></td>
+          <td>4</td>
+          <td style="color: #e74c3c; font-weight: 700;">13.3%</td>
+        </tr>
+        <tr>
+          <td><strong>고가</strong></td>
+          <td>₩70,000~99,999</td>
+          <td>무선 이어폰 (₩89,000)</td>
+          <td><span class="above-average">평균 이상</span></td>
+          <td>6</td>
+          <td style="color: #e74c3c; font-weight: 700;">20.0%</td>
+        </tr>
+        <tr>
+          <td><strong>중가</strong></td>
+          <td>₩40,000~69,999</td>
+          <td>무선 충전기 (₩45,000)<br>보조배터리 (₩35,000)</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>9</td>
+          <td style="color: #27ae60; font-weight: 700;">30.0%</td>
+        </tr>
+        <tr>
+          <td><strong>저가</strong></td>
+          <td>₩15,000~39,999</td>
+          <td>텀블러 (₩25,000)<br>에코백 (₩15,000)</td>
+          <td><span class="below-average">평균 이하</span></td>
+          <td>8</td>
+          <td style="color: #27ae60; font-weight: 700;">26.7%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 전체 거래 데이터 ── -->
+  <div class="table-section">
+    <h2>📋 전체 거래 현황 (평균 비교 포함)</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>날짜</th>
+          <th>제품명</th>
+          <th>카테고리</th>
+          <th>수량</th>
+          <th>단가</th>
+          <th>매출액</th>
+          <th>지역</th>
+          <th>평균 비교</th>
+          <th>차액</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2026-01-05</td><td>무선 이어폰</td><td>전자기기</td><td>45</td><td>₩89,000</td><td>₩4,005,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-01-05</td><td>보조배터리</td><td>전자기기</td><td>32</td><td>₩35,000</td><td>₩1,120,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+        <tr><td>2026-01-05</td><td>텀블러</td><td>생활용품</td><td>78</td><td>₩25,000</td><td>₩1,950,000</td><td>부산</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-01-08</td><td>무선 이어폰</td><td>전자기기</td><td>52</td><td>₩89,000</td><td>₩4,628,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-01-08</td><td>블루투스 스피커</td><td>전자기기</td><td>18</td><td>₩120,000</td><td>₩2,160,000</td><td>대구</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩68,500</span></td></tr>
+        <tr><td>2026-01-08</td><td>텀블러</td><td>생활용품</td><td>65</td><td>₩25,000</td><td>₩1,625,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-01-12</td><td>보조배터리</td><td>전자기기</td><td>41</td><td>₩35,000</td><td>₩1,435,000</td><td>부산</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+        <tr><td>2026-01-12</td><td>무선 충전기</td><td>전자기기</td><td>29</td><td>₩45,000</td><td>₩1,305,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩6,500</span></td></tr>
+        <tr><td>2026-01-12</td><td>에코백</td><td>생활용품</td><td>93</td><td>₩15,000</td><td>₩1,395,000</td><td>대구</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩36,500</span></td></tr>
+        <tr><td>2026-01-15</td><td>무선 이어폰</td><td>전자기기</td><td>38</td><td>₩89,000</td><td>₩3,382,000</td><td>부산</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-01-15</td><td>블루투스 스피커</td><td>전자기기</td><td>22</td><td>₩120,000</td><td>₩2,640,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩68,500</span></td></tr>
+        <tr><td>2026-01-15</td><td>텀블러</td><td>생활용품</td><td>84</td><td>₩25,000</td><td>₩2,100,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-01-19</td><td>보조배터리</td><td>전자기기</td><td>55</td><td>₩35,000</td><td>₩1,925,000</td><td>대구</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+        <tr><td>2026-01-19</td><td>에코백</td><td>생활용품</td><td>110</td><td>₩15,000</td><td>₩1,650,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩36,500</span></td></tr>
+        <tr><td>2026-01-19</td><td>무선 충전기</td><td>전자기기</td><td>33</td><td>₩45,000</td><td>₩1,485,000</td><td>부산</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩6,500</span></td></tr>
+        <tr><td>2026-01-22</td><td>무선 이어폰</td><td>전자기기</td><td>61</td><td>₩89,000</td><td>₩5,429,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-01-22</td><td>텀블러</td><td>생활용품</td><td>72</td><td>₩25,000</td><td>₩1,800,000</td><td>대구</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-01-22</td><td>블루투스 스피커</td><td>전자기기</td><td>15</td><td>₩120,000</td><td>₩1,800,000</td><td>부산</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩68,500</span></td></tr>
+        <tr><td>2026-01-26</td><td>보조배터리</td><td>전자기기</td><td>48</td><td>₩35,000</td><td>₩1,680,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+        <tr><td>2026-01-26</td><td>에코백</td><td>생활용품</td><td>88</td><td>₩15,000</td><td>₩1,320,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩36,500</span></td></tr>
+        <tr><td>2026-01-26</td><td>무선 충전기</td><td>전자기기</td><td>37</td><td>₩45,000</td><td>₩1,665,000</td><td>대구</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩6,500</span></td></tr>
+        <tr><td>2026-02-01</td><td>무선 이어폰</td><td>전자기기</td><td>70</td><td>₩89,000</td><td>₩6,230,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-02-01</td><td>텀블러</td><td>생활용품</td><td>95</td><td>₩25,000</td><td>₩2,375,000</td><td>부산</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-02-01</td><td>보조배터리</td><td>전자기기</td><td>43</td><td>₩35,000</td><td>₩1,505,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+        <tr><td>2026-02-05</td><td>블루투스 스피커</td><td>전자기기</td><td>25</td><td>₩120,000</td><td>₩3,000,000</td><td>서울</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩68,500</span></td></tr>
+        <tr><td>2026-02-05</td><td>에코백</td><td>생활용품</td><td>120</td><td>₩15,000</td><td>₩1,800,000</td><td>대구</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩36,500</span></td></tr>
+        <tr><td>2026-02-05</td><td>무선 충전기</td><td>전자기기</td><td>31</td><td>₩45,000</td><td>₩1,395,000</td><td>부산</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩6,500</span></td></tr>
+        <tr><td>2026-02-10</td><td>무선 이어폰</td><td>전자기기</td><td>58</td><td>₩89,000</td><td>₩5,162,000</td><td>대구</td><td><span class="above-average">평균 이상</span></td><td style="color: #e74c3c;">+₩37,500</span></td></tr>
+        <tr><td>2026-02-10</td><td>텀블러</td><td>생활용품</td><td>67</td><td>₩25,000</td><td>₩1,675,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩26,500</span></td></tr>
+        <tr><td>2026-02-10</td><td>보조배터리</td><td>전자기기</td><td>39</td><td>₩35,000</td><td>₩1,365,000</td><td>서울</td><td><span class="below-average">평균 이하</span></td><td style="color: #27ae60;">-₩16,500</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── 요약 ── -->
+  <div class="summary-section">
+    <h2>🎯 주요 발견사항</h2>
+
+    <ul class="summary-list">
+      <li>
+        <span><strong>평균 단가</strong></span>
+        <span class="summary-value">₩51,500</span>
+      </li>
+      <li>
+        <span><strong>평균 이상 제품</strong></span>
+        <span class="summary-value">2종 (33.3%)</span>
+      </li>
+      <li>
+        <span><strong>평균 이하 제품</strong></span>
+        <span class="summary-value">4종 (66.7%)</span>
+      </li>
+      <li>
+        <span><strong>가격대 격차</strong></span>
+        <span class="summary-value">₩105,000 (₩15,000 ~ ₩120,000)</span>
+      </li>
+      <li>
+        <span><strong>최고 프리미엄</strong></span>
+        <span class="summary-value">블루투스 스피커 (+133% vs 평균)</span>
+      </li>
+      <li>
+        <span><strong>최저 가격</strong></span>
+        <span class="summary-value">에코백 (-71% vs 평균)</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ── 푸터 ── -->
+  <footer>
+    <p>가격 분석 데이터 | 30개 거래 분석 | 2026년 1월 5일 ~ 2월 10일</p>
+  </footer>
+</div>
+
+</body>
+</html>
