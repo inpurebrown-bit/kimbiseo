@@ -3,6 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="팀의 일일 업무, 프로젝트 진행 상황, 매출 현황을 자동으로 분석하는 스마트 업무 관리 대시보드" />
+  <meta name="theme-color" content="#667eea" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="김비서" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea;stop-opacity:1' /><stop offset='100%' style='stop-color:%23764ba2;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='45'/><text x='96' y='96' font-size='100' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif'>김</text></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea;stop-opacity:1' /><stop offset='100%' style='stop-color:%23764ba2;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='180' height='180' rx='40'/><text x='90' y='90' font-size='90' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif'>김</text></svg>" />
+  <link rel="manifest" href="/manifest.json" />
   <title>김비서 대시보드</title>
   <style>
     /* ── CSS 변수 (라이트/다크) ── */
@@ -955,6 +963,51 @@
         link.classList.remove('active');
       }
     });
+  })();
+
+  // ── Service Worker 등록 (PWA) ──
+  (function() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+          .then((registration) => {
+            console.log('✅ Service Worker 등록 성공:', registration);
+
+            // 업데이트 확인
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'activated') {
+                  console.log('🔄 새 버전 업데이트 가능');
+                  // 선택사항: 사용자에게 새 버전 알림
+                  if (window.location.reload) {
+                    // 자동 새로고침 또는 사용자 알림
+                  }
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.warn('⚠️ Service Worker 등록 실패:', error);
+          });
+
+        // 서비스 워커 업데이트 체크 (1시간마다)
+        setInterval(() => {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          }
+        }, 60 * 60 * 1000);
+      });
+
+      // 서비스 워커 메시지 수신
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'OFFLINE') {
+          console.log('🔴 오프라인 모드 활성화');
+        }
+      });
+    } else {
+      console.warn('⚠️ 이 브라우저는 Service Worker를 지원하지 않습니다');
+    }
   })();
 </script>
 
