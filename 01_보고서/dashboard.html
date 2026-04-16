@@ -634,79 +634,118 @@
         border-radius: 6px;
       }
 
-      /* ── 할 일 목록 최적화 ── */
+      /* ── 할 일 목록 최적화 (모바일) ── */
       .todo-list {
-        gap: 6px;
+        gap: 8px;
       }
 
       .todo-item {
-        padding: 10px 10px;
+        padding: 12px;
         font-size: 13px;
-        gap: 10px;
+        gap: 8px;
         border-radius: 8px;
-        min-height: 40px;
+        min-height: auto;
         display: flex;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
       }
 
       .todo-check {
-        min-width: 18px;
-        width: 18px;
-        height: 18px;
-        flex-shrink: 0;
+        display: none;
+      }
+
+      .todo-item > div {
+        width: 100%;
       }
 
       .todo-text {
         font-size: 13px;
+        font-weight: 600;
         line-height: 1.4;
-        flex: 1;
-        word-break: break-word;
+        margin-bottom: 4px;
+      }
+
+      .todo-meta {
+        font-size: 11px;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+      }
+
+      .priority-badge,
+      .status-tag {
+        display: inline-block;
+        font-size: 10px;
+        padding: 3px 6px;
+        margin-right: 4px;
+        margin-bottom: 0;
+        border-radius: 4px;
       }
 
       .todo-date {
-        font-size: 11px;
-        padding: 3px 8px;
-        border-radius: 6px;
-        flex-shrink: 0;
-        white-space: nowrap;
-        margin-left: auto;
+        display: none;
       }
 
-      /* ── 주간 일정 최적화 ── */
-      .schedule-item {
-        padding: 11px 10px;
-        font-size: 13px;
-        gap: 10px;
-        border-radius: 8px;
-        min-height: 40px;
-        display: flex;
-        align-items: center;
+      /* ── 주간 일정 최적화 (모바일용 테이블) ── */
+      .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
       }
 
-      .schedule-day {
-        min-width: 32px;
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
+      .schedule-table thead {
+        display: none;
+      }
+
+      .schedule-table tbody tr {
+        display: block;
+        border-bottom: 1px solid var(--divider);
+        padding: 12px 0;
+      }
+
+      .schedule-table tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      .schedule-table td {
+        display: block;
         padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        background: rgba(255,255,255,0.1);
-        flex-shrink: 0;
-        font-weight: 600;
+        border: none;
+        width: 100%;
       }
 
-      .schedule-time {
+      .schedule-table td:first-child {
+        margin-bottom: 8px;
+      }
+
+      .day-label {
+        display: inline-block;
         font-size: 12px;
-        min-width: 45px;
-        flex-shrink: 0;
-        font-weight: 600;
+        font-weight: 700;
+        padding: 4px 8px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 6px;
       }
 
-      .schedule-event {
-        font-size: 13px;
+      .event-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+
+      .event-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .event-time {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        min-width: 35px;
+        flex-shrink: 0;
+      }
+
+      .event-chip {
+        font-size: 12px;
         flex: 1;
         word-break: break-word;
       }
@@ -933,42 +972,56 @@
         border-radius: 5px;
       }
 
-      /* ── 할 일 & 일정 ── */
-      .todo-item,
-      .schedule-item {
-        padding: 9px;
+      /* ── 할 일 & 일정 (극소형 모바일) ── */
+      .todo-item {
+        padding: 10px;
         font-size: 12px;
-        min-height: 36px;
-        gap: 8px;
+        flex-direction: column;
       }
 
       .todo-check {
-        min-width: 16px;
-        width: 16px;
-        height: 16px;
+        display: none;
       }
 
-      .schedule-day {
-        min-width: 28px;
-        width: 28px;
-        height: 28px;
-        font-size: 11px;
-      }
-
-      .schedule-time {
-        font-size: 11px;
-        min-width: 40px;
-      }
-
-      .todo-date,
-      .todo-text,
-      .schedule-event {
+      .todo-text {
         font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 3px;
       }
 
-      .todo-date {
+      .todo-meta {
         font-size: 10px;
-        padding: 2px 6px;
+        margin-bottom: 4px;
+      }
+
+      .priority-badge,
+      .status-tag {
+        font-size: 9px;
+        padding: 2px 5px;
+      }
+
+      .schedule-table td:first-child {
+        margin-bottom: 6px;
+      }
+
+      .day-label {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+
+      .event-row {
+        gap: 6px;
+        margin-bottom: 3px;
+        font-size: 11px;
+      }
+
+      .event-time {
+        font-size: 10px;
+        min-width: 32px;
+      }
+
+      .event-chip {
+        font-size: 11px;
       }
 
       /* ── 프로젝트 ── */
