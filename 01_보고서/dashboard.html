@@ -553,146 +553,429 @@
     }
 
     /* ══════════════════════════════
-       반응형 디자인 (모바일)
+       반응형 디자인 (모바일 - 768px 이하)
     ══════════════════════════════ */
     @media (max-width: 768px) {
       body {
-        padding: 16px;
-        min-height: 100vh;
+        padding: 12px 14px;
+        overflow-x: hidden;
+        background-attachment: fixed;
       }
 
-      /* ── 헤더 ── */
+      /* ── 헤더 최적화 ── */
       header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 18px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        flex-wrap: nowrap;
       }
 
       header h1 {
-        font-size: 18px;
-        margin-bottom: 4px;
+        font-size: 20px;
+        margin: 0;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
       }
 
       .header-right {
-        width: 100%;
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: space-between;
+        gap: 6px;
         align-items: center;
+        flex-shrink: 0;
       }
 
       .date-badge {
-        font-size: 11px;
-        padding: 5px 12px;
-        flex: 0 1 auto;
+        display: none;
       }
 
-      /* ── 내비게이션 ── */
+      /* ── 네비게이션 숨김 (모바일에서는 최소화) ── */
       .nav-menu {
-        width: 100%;
-        margin-left: 0;
-        gap: 4px;
-        flex-wrap: wrap;
-      }
-
-      .nav-link {
-        padding: 4px 10px;
-        font-size: 10px;
-        flex: 1 1 auto;
-        text-align: center;
-        min-width: 70px;
+        display: none;
       }
 
       .theme-toggle {
-        padding: 4px 10px;
-        font-size: 11px;
-        width: 100%;
+        width: auto;
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 20px;
+        flex-shrink: 0;
+        min-height: 32px;
+        min-width: 32px;
       }
 
-      /* ── 그리드 ── */
+      /* ── 그리드 (1열로 변경) ── */
       .grid {
         grid-template-columns: 1fr;
-        gap: 14px;
+        gap: 12px;
       }
 
-      /* ── 카드 ── */
+      /* ── 카드 스타일 ── */
       .card {
-        padding: 16px;
-        border-radius: 14px;
-        margin-bottom: 2px;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 0;
+        box-shadow: var(--card-shadow);
       }
 
       .card-title {
         font-size: 13px;
-        margin-bottom: 14px;
-        gap: 6px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        gap: 8px;
       }
 
       .card-title .icon {
-        width: 26px;
-        height: 26px;
-        font-size: 13px;
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+        border-radius: 6px;
       }
 
-      /* ── 할 일 목록 ── */
+      /* ── 할 일 목록 최적화 ── */
       .todo-list {
         gap: 6px;
       }
 
       .todo-item {
-        padding: 8px 10px;
-        font-size: 12px;
-        gap: 8px;
+        padding: 10px 10px;
+        font-size: 13px;
+        gap: 10px;
+        border-radius: 8px;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
       }
 
       .todo-check {
         min-width: 18px;
         width: 18px;
         height: 18px;
+        flex-shrink: 0;
       }
 
       .todo-text {
-        font-size: 12px;
-        line-height: 1.3;
+        font-size: 13px;
+        line-height: 1.4;
+        flex: 1;
+        word-break: break-word;
       }
 
       .todo-date {
-        font-size: 9px;
-        padding: 2px 6px;
+        font-size: 11px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-left: auto;
       }
 
-      /* ── 주간 일정 ── */
+      /* ── 주간 일정 최적화 ── */
       .schedule-item {
-        padding: 8px 10px;
+        padding: 11px 10px;
+        font-size: 13px;
+        gap: 10px;
+        border-radius: 8px;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+      }
+
+      .schedule-day {
+        min-width: 32px;
+        width: 32px;
+        height: 32px;
         font-size: 12px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.1);
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      .schedule-time {
+        font-size: 12px;
+        min-width: 45px;
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+
+      .schedule-event {
+        font-size: 13px;
+        flex: 1;
+        word-break: break-word;
+      }
+
+      /* ── 프로젝트 최적화 ── */
+      .project-item {
+        padding: 12px;
+        margin-bottom: 6px;
+        border-radius: 8px;
+        background: var(--subcard-bg);
+        border: 1px solid var(--divider);
+      }
+
+      .project-header {
         gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .project-name {
+        font-size: 13px;
+        font-weight: 600;
+        flex: 1;
+        word-break: break-word;
+      }
+
+      .project-right {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .project-pct {
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 30px;
+        text-align: right;
+      }
+
+      .status-pill {
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+
+      .progress-bar-bg {
+        height: 6px;
+        border-radius: 999px;
+        background: var(--progress-bg);
+        margin-bottom: 4px;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+      }
+
+      .sub-info {
+        font-size: 10px;
+        margin-top: 3px;
+        line-height: 1.3;
+      }
+
+      /* ── 매출 카드 최적화 ── */
+      .sales-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .sales-card {
+        padding: 10px;
+        border-radius: 8px;
+        min-height: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .sales-card.total {
+        grid-column: 1 / -1;
+        min-height: 70px;
+      }
+
+      .sales-label {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+
+      .sales-value {
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .sales-sub {
+        font-size: 9px;
+        margin-top: 2px;
+      }
+
+      /* ── 카테고리 섹션 ── */
+      .category-section {
+        margin-bottom: 8px;
+      }
+
+      .section-sub-title {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .category-bar {
+        gap: 8px;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+      }
+
+      .cat-label {
+        width: 45px;
+        font-size: 11px;
+        flex-shrink: 0;
+      }
+
+      .cat-bg {
+        height: 5px;
+        border-radius: 999px;
+        flex: 1;
+      }
+
+      .cat-pct {
+        font-size: 11px;
+        font-weight: 700;
+        width: 32px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* ── 지역 그리드 ── */
+      .region-grid {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--divider);
+      }
+
+      .region-card {
+        flex: 1;
+        padding: 8px;
+        border-radius: 8px;
+        background: var(--subcard-bg);
+        border: 1px solid var(--divider);
+        text-align: center;
+        min-height: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .region-name {
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .region-sub {
+        font-size: 9px;
+        margin-top: 2px;
+      }
+    }
+
+    /* ══════════════════════════════
+       극소형 모바일 (< 480px)
+    ══════════════════════════════ */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px 12px;
+        font-size: 13px;
+      }
+
+      /* ── 헤더 초소형 ── */
+      header {
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      header h1 {
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .header-right {
+        gap: 4px;
+      }
+
+      .theme-toggle {
+        padding: 5px 8px;
+        font-size: 12px;
+        min-height: 28px;
+        min-width: 28px;
+      }
+
+      /* ── 그리드 ── */
+      .grid {
+        gap: 10px;
+      }
+
+      /* ── 카드 ── */
+      .card {
+        padding: 12px;
+        border-radius: 10px;
+      }
+
+      .card-title {
+        font-size: 12px;
+        margin-bottom: 10px;
+        gap: 6px;
+      }
+
+      .card-title .icon {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+        border-radius: 5px;
+      }
+
+      /* ── 할 일 & 일정 ── */
+      .todo-item,
+      .schedule-item {
+        padding: 9px;
+        font-size: 12px;
+        min-height: 36px;
+        gap: 8px;
+      }
+
+      .todo-check {
+        min-width: 16px;
+        width: 16px;
+        height: 16px;
       }
 
       .schedule-day {
         min-width: 28px;
         width: 28px;
+        height: 28px;
         font-size: 11px;
-        padding: 4px;
       }
 
       .schedule-time {
-        font-size: 10px;
+        font-size: 11px;
+        min-width: 40px;
       }
 
+      .todo-date,
+      .todo-text,
       .schedule-event {
-        font-size: 11px;
+        font-size: 12px;
+      }
+
+      .todo-date {
+        font-size: 10px;
+        padding: 2px 6px;
       }
 
       /* ── 프로젝트 ── */
       .project-item {
         padding: 10px;
-        margin-bottom: 8px;
-      }
-
-      .project-header {
-        gap: 8px;
+        border-radius: 8px;
+        margin-bottom: 4px;
       }
 
       .project-name {
@@ -704,178 +987,100 @@
         min-width: 28px;
       }
 
+      .project-right {
+        gap: 4px;
+      }
+
       .status-pill {
         font-size: 9px;
         padding: 3px 6px;
       }
 
-      .sub-info {
-        font-size: 9px;
+      .progress-bar-bg {
+        height: 5px;
+        margin-bottom: 3px;
       }
 
-      /* ── 매출 ── */
+      .sub-info {
+        font-size: 9px;
+        line-height: 1.2;
+      }
+
+      /* ── 매출 카드 ── */
       .sales-grid {
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: 6px;
+        margin-bottom: 8px;
       }
 
       .sales-card {
-        padding: 10px 12px;
-        border-radius: 10px;
+        padding: 9px;
+        border-radius: 8px;
+        min-height: 55px;
+      }
+
+      .sales-card.total {
+        grid-column: 1 / -1;
+        min-height: 60px;
+        padding: 10px;
       }
 
       .sales-label {
-        font-size: 10px;
+        font-size: 9px;
+        margin-bottom: 1px;
       }
 
       .sales-value {
         font-size: 14px;
+        font-weight: 800;
+        line-height: 1.2;
       }
 
       .sales-sub {
-        font-size: 9px;
+        font-size: 8px;
+        margin-top: 1px;
+      }
+
+      /* ── 카테고리 ── */
+      .category-section {
+        margin-bottom: 6px;
       }
 
       .section-sub-title {
         font-size: 11px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
       }
 
       .category-bar {
         gap: 6px;
-        margin-top: 3px;
+        margin-top: 4px;
       }
 
       .cat-label {
-        width: 48px;
+        width: 40px;
         font-size: 10px;
       }
 
       .cat-bg {
-        height: 6px;
+        height: 4px;
       }
 
       .cat-pct {
         font-size: 10px;
-        width: 30px;
+        width: 28px;
       }
 
-      .region-grid {
-        gap: 8px;
-        margin-top: 10px;
-        padding-top: 10px;
-      }
-
-      .region-card {
-        padding: 8px;
-        border-radius: 10px;
-      }
-
-      .region-name {
-        font-size: 14px;
-      }
-
-      .region-sub {
-        font-size: 9px;
-      }
-    }
-
-    /* ══════════════════════════════
-       극소형 모바일 (< 480px)
-    ══════════════════════════════ */
-    @media (max-width: 480px) {
-      body {
-        padding: 12px;
-      }
-
-      header {
-        gap: 10px;
-      }
-
-      header h1 {
-        font-size: 16px;
-      }
-
-      .header-right {
-        width: 100%;
-      }
-
-      .nav-link {
-        padding: 3px 8px;
-        font-size: 9px;
-        min-width: 60px;
-      }
-
-      .theme-toggle {
-        padding: 3px 8px;
-        font-size: 10px;
-      }
-
-      .card {
-        padding: 12px;
-        margin-bottom: 0;
-      }
-
-      .card-title {
-        font-size: 12px;
-        margin-bottom: 10px;
-      }
-
-      .card-title .icon {
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
-      }
-
-      .todo-item,
-      .schedule-item {
-        padding: 6px 8px;
-        font-size: 11px;
-      }
-
-      .todo-check {
-        min-width: 16px;
-        width: 16px;
-        height: 16px;
-      }
-
-      .sales-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .sales-card {
-        padding: 8px 10px;
-      }
-
-      .sales-label {
-        font-size: 9px;
-      }
-
-      .sales-value {
-        font-size: 12px;
-      }
-
-      .project-item {
-        padding: 8px;
-      }
-
-      .project-name {
-        font-size: 11px;
-      }
-
-      .status-pill {
-        font-size: 8px;
-        padding: 2px 4px;
-      }
-
+      /* ── 지역 그리드 ── */
       .region-grid {
         gap: 6px;
+        margin-top: 8px;
+        padding-top: 8px;
       }
 
       .region-card {
-        padding: 6px;
+        padding: 7px;
+        border-radius: 8px;
+        min-height: 45px;
       }
 
       .region-name {
@@ -884,6 +1089,7 @@
 
       .region-sub {
         font-size: 8px;
+        margin-top: 1px;
       }
     }
   </style>
