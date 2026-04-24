@@ -22,12 +22,10 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="color-scheme" content="light dark" />
       </head>
-      <body className="bg-light-gradient dark:bg-dark-gradient min-h-screen">
+      <body className="min-h-screen">
         <ThemeProvider>
           <Header />
-          <main className="min-h-[calc(100vh-80px)] p-6 md:p-8">
-            {children}
-          </main>
+          {children}
         </ThemeProvider>
       </body>
     </html>

@@ -4,8 +4,10 @@ import Dashboard from '@/components/dashboard/Dashboard';
 
 export default function Home() {
   return (
-    <div className="animate-fade-in">
-      <Dashboard />
-    </div>
+    <main className="min-h-screen py-8 px-6 animate-fade-in">
+      <div className="max-w-7xl mx-auto">
+        <Dashboard />
+      </div>
+    </main>
   );
 }
