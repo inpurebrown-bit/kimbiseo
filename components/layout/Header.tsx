@@ -2,12 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '@/components/hooks/useTheme';
+import ChatBot from '@/components/chat/ChatBot';
 
 // ==================== Header 컴포넌트 ====================
 
 export function Header() {
   const { theme, toggleTheme } = useTheme();
   const [currentDate, setCurrentDate] = useState<string>('');
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     // 현재 날짜 포맷팅 (예: Mon, Mar 10, 2026)
@@ -42,16 +44,32 @@ export function Header() {
           </p>
         </div>
 
-        {/* 우측: 테마 토글 버튼 */}
-        <button
-          onClick={toggleTheme}
-          className="glass-input px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-opacity-80 focus:ring-2 focus:ring-primary focus:outline-none"
-          aria-label="테마 전환"
-          title={`${theme === 'light' ? '다크' : '라이트'} 모드로 전환`}
-        >
-          {theme === 'light' ? '🌙' : '☀️'}
-        </button>
+        {/* 우측: 버튼들 */}
+        <div className="flex items-center gap-2">
+          {/* 채팅 버튼 */}
+          <button
+            onClick={() => setIsChatOpen(true)}
+            className="glass-input px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-opacity-80 focus:ring-2 focus:ring-primary focus:outline-none"
+            aria-label="AI 채팅 열기"
+            title="김비서 AI 어시스턴트"
+          >
+            💬
+          </button>
+
+          {/* 테마 토글 버튼 */}
+          <button
+            onClick={toggleTheme}
+            className="glass-input px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-opacity-80 focus:ring-2 focus:ring-primary focus:outline-none"
+            aria-label="테마 전환"
+            title={`${theme === 'light' ? '다크' : '라이트'} 모드로 전환`}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        </div>
       </div>
+
+      {/* ChatBot 모달 */}
+      <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </header>
   );
 }
