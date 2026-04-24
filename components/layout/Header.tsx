@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useTheme } from '@/components/hooks/useTheme';
-import ChatBot from '@/components/chat/ChatBot';
+
+const ChatBot = lazy(() => import('@/components/chat/ChatBot'));
 
 // ==================== Header 컴포넌트 ====================
 
@@ -83,7 +84,9 @@ export function Header() {
       </div>
 
       {/* ChatBot 모달 */}
-      <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      <Suspense fallback={null}>
+        <ChatBot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
+      </Suspense>
     </header>
   );
 }
