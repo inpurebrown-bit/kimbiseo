@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SubTrackr 웹사이트 분석 보고서</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+      color: #2c3e50;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      color: #fff;
+      padding: 40px;
+      border-radius: 16px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    header .subtitle {
+      font-size: 14px;
+      color: #ecf0f1;
+      opacity: 0.9;
+    }
+
+    .meta-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .meta-item {
+      text-align: center;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #bdc3c7;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ── 섹션 그리드 ── */
+    .sections-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .section-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-top: 4px solid #3498db;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .section-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+
+    .section-card.design { border-top-color: #e74c3c; }
+    .section-card.features { border-top-color: #2ecc71; }
+    .section-card.strengths { border-top-color: #f39c12; }
+    .section-card.improvements { border-top-color: #9b59b6; }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #2c3e50;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    .section-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #555;
+    }
+
+    /* ── 리스트 스타일 ── */
+    .feature-list {
+      list-style: none;
+      margin-top: 14px;
+    }
+
+    .feature-list li {
+      padding: 10px 0;
+      padding-left: 28px;
+      position: relative;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+      color: #3498db;
+    }
+
+    .improvement-list li::before {
+      content: '→';
+      color: #9b59b6;
+    }
+
+    /* ── 두 열 레이아웃이 한 열로 (구조 & 기능 아래) ── */
+    .full-width-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-top: 4px solid #1abc9c;
+      margin-bottom: 24px;
+    }
+
+    /* ── 기술 스택 ── */
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .tech-badge {
+      background: linear-gradient(135deg, #ecf0f1 0%, #d5dbdb 100%);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #2c3e50;
+      text-align: center;
+      border: 1px solid #bdc3c7;
+    }
+
+    /* ── 평점 ── */
+    .rating-box {
+      background: linear-gradient(135deg, #fff5e1 0%, #ffe8cc 100%);
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 16px;
+      text-align: center;
+      border-left: 4px solid #f39c12;
+    }
+
+    .rating-stars {
+      font-size: 18px;
+      color: #f39c12;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+
+    .rating-text {
+      font-size: 12px;
+      color: #c0392b;
+      font-weight: 600;
+    }
+
+    /* ── 색상 팔레트 ── */
+    .color-palette {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      border: 2px solid #e0e0e0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 8px;
+      color: #555;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* ── 하이라이트 박스 ── */
+    .highlight-box {
+      background: linear-gradient(135deg, #e8f8f5 0%, #d5f4e6 100%);
+      padding: 16px;
+      border-radius: 10px;
+      border-left: 4px solid #1abc9c;
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #16a085;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7f8c8d;
+      font-size: 12px;
+      margin-top: 40px;
+      border-top: 1px solid #ecf0f1;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .sections-grid {
+        grid-template-columns: 1fr;
+      }
+      header h1 { font-size: 24px; }
+      .section-card { padding: 20px; }
+      .tech-stack { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ── 헤더 ── -->
+  <header>
+    <h1>🔍 SubTrackr 웹사이트 분석 보고서</h1>
+    <p class="subtitle">구독료 추적 플랫폼 웹사이트 상세 분석</p>
+
+    <div class="meta-info">
+      <div class="meta-item">
+        <div class="meta-label">URL</div>
+        <div class="meta-value">subtrac.kr</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">회사</div>
+        <div class="meta-value">HELLOVR, INC.</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">평가</div>
+        <div class="meta-value">4.8/5 ⭐</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">사용자</div>
+        <div class="meta-value">120+ 리뷰</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── 섹션 1: 사이트 구조 ── -->
+  <div class="sections-grid">
+    <div class="section-card">
+      <h2 class="section-title">
+        <span class="section-icon">🏗️</span>
+        사이트 구조
+      </h2>
+      <div class="section-content">
+        <p style="margin-bottom: 12px;">
+          SubTrackr은 <strong>Next.js 기반</strong>의 현대적인 웹 애플리케이션으로,
+          서버 사이드 렌더링(SSR)을 활용하여 빠른 로딩과 검색 엔진 최적화를 동시에 달성합니다.
+        </p>
+        <ul class="feature-list">
+          <li><strong>반응형 디자인</strong> - 모바일/태블릿/데스크톱 완벽 지원</li>
+          <li><strong>다국어 지원</strong> - 11개 언어 인터페이스</li>
+          <li><strong>SEO 최적화</strong> - schema.org 구조화된 마크업</li>
+          <li><strong>접근성 고려</strong> - 메타데이터 및 ARIA 속성 포함</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ── 섹션 2: 디자인 & 시각화 ── -->
+    <div class="section-card design">
+      <h2 class="section-title">
+        <span class="section-icon">🎨</span>
+        디자인 & 시각화
+      </h2>
+      <div class="section-content">
+        <p style="margin-bottom: 12px;">
+          <strong>Nunito 폰트</strong>를 기반으로 한 깔끔하고 현대적인 UI 디자인으로
+          사용자 친화적인 경험을 제공합니다.
+        </p>
+
+        <div style="margin-top: 12px;">
+          <strong>색상 팔레트:</strong>
+          <div class="color-palette">
+            <div class="color-swatch" style="background: #414042;">
+              <span>#414042</span>
+            </div>
+            <div class="color-swatch" style="background: #2c3e50;">
+              <span>#2c3e50</span>
+            </div>
+            <div class="color-swatch" style="background: #ecf0f1;">
+              <span>#ecf0f1</span>
+            </div>
+            <div class="color-swatch" style="background: #3498db;">
+              <span>#3498db</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          ✨ <strong>다크 모드 지원</strong> - 야간 사용자 배려
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 섹션 3: 기술 스택 ── -->
+  <div class="full-width-section">
+    <h2 class="section-title">
+      <span class="section-icon">⚙️</span>
+      기술 스택 & 인프라
+    </h2>
+    <div class="section-content">
+      <p style="margin-bottom: 16px;">
+        최신 웹 기술을 활용한 고성능 플랫폼 구축:
+      </p>
+      <div class="tech-stack">
+        <div class="tech-badge">Next.js (React)</div>
+        <div class="tech-badge">SSR 렌더링</div>
+        <div class="tech-badge">AI 스크린샷 감지</div>
+        <div class="tech-badge">다국어 지원</div>
+        <div class="tech-badge">16개 통화 대응</div>
+        <div class="tech-badge">130+ 서비스 연동</div>
+        <div class="tech-badge">모바일 앱 지원</div>
+        <div class="tech-badge">클라우드 인프라</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 섹션 4: 주요 기능 & 서비스 ── -->
+  <div class="sections-grid">
+    <div class="section-card features">
+      <h2 class="section-title">
+        <span class="section-icon">⚡</span>
+        주요 기능
+      </h2>
+      <div class="section-content">
+        <ul class="feature-list">
+          <li><strong>AI 기반 스크린샷 감지</strong> - 자동 구독료 인식</li>
+          <li><strong>은행 로그인 불필요</strong> - 개인정보 보호</li>
+          <li><strong>130+ 글로벌 서비스 지원</strong> - 광범위한 호환성</li>
+          <li><strong>11개 언어 & 16개 통화</strong> - 글로벌 네이티브 경험</li>
+          <li><strong>실시간 알림</strong> - 구독료 변경 감지</li>
+          <li><strong>구독료 비교 기능</strong> - 최저가 확인</li>
+        </ul>
+
+        <div class="rating-box">
+          <div class="rating-stars">★★★★★</div>
+          <div class="rating-text">사용자 평가 4.8/5 (120개 리뷰)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 섹션 5: 차별화된 강점 ── -->
+    <div class="section-card strengths">
+      <h2 class="section-title">
+        <span class="section-icon">🌟</span>
+        잘한 점 (Strengths)
+      </h2>
+      <div class="section-content">
+        <ul class="feature-list">
+          <li><strong>프라이버시 우선</strong> - 은행 접근 불필요</li>
+          <li><strong>AI 기술 활용</strong> - 자동화된 스크린샷 인식</li>
+          <li><strong>글로벌 확장성</strong> - 11언어, 16통화, 130+ 서비스</li>
+          <li><strong>직관적 UI/UX</strong> - 낮은 진입장벽</li>
+          <li><strong>높은 사용자 만족도</strong> - 4.8/5 평가</li>
+          <li><strong>모바일 최우선</strong> - 앱/웹 통합 경험</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 섹션 6: 개선 사항 ── -->
+  <div class="full-width-section">
+    <h2 class="section-title">
+      <span class="section-icon">💡</span>
+      개선 가능 영역 (Opportunities)
+    </h2>
+    <div class="section-content">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <h4 style="color: #9b59b6; font-size: 13px; font-weight: 700; margin-bottom: 10px;">UX/UI 개선</h4>
+          <ul class="feature-list improvement-list">
+            <li>온보딩 프로세스 단순화 (3단계 → 1단계)</li>
+            <li>대시보드 커스터마이징 옵션 추가</li>
+            <li>실시간 차트 및 트렌드 분석</li>
+            <li>암호화 및 보안 설정 시각화</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 style="color: #9b59b6; font-size: 13px; font-weight: 700; margin-bottom: 10px;">기능 확장</h4>
+          <ul class="feature-list improvement-list">
+            <li>구독 공유 가족 플랜 기능</li>
+            <li>예산 설정 및 알림 고급화</li>
+            <li>블록체인 영수증 저장소</li>
+            <li>CRM 통합 (HubSpot, Salesforce)</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 style="color: #9b59b6; font-size: 13px; font-weight: 700; margin-bottom: 10px;">성능 최적화</h4>
+          <ul class="feature-list improvement-list">
+            <li>초기 로딩 속도 개선 (Core Web Vitals)</li>
+            <li>오프라인 모드 지원</li>
+            <li>데이터 캐싱 전략 고도화</li>
+            <li>AI 처리 시간 단축</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 style="color: #9b59b6; font-size: 13px; font-weight: 700; margin-bottom: 10px;">마케팅/성장</h4>
+          <ul class="feature-list improvement-list">
+            <li>소셜 로그인 (Google, Apple) 추가</li>
+            <li>레퍼럴 프로그램 강화</li>
+            <li>커뮤니티 포럼 또는 블로그 구축</li>
+            <li>기업용(B2B) 패키지 출시</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 섹션 7: 종합 평가 ── -->
+  <div class="full-width-section">
+    <h2 class="section-title">
+      <span class="section-icon">📊</span>
+      종합 평가
+    </h2>
+    <div class="section-content">
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 800; color: #2ecc71;">9.0/10</div>
+          <div style="font-size: 11px; color: #555; margin-top: 4px;">기술</div>
+        </div>
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 800; color: #3498db;">8.5/10</div>
+          <div style="font-size: 11px; color: #555; margin-top: 4px;">디자인</div>
+        </div>
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 800; color: #f39c12;">9.2/10</div>
+          <div style="font-size: 11px; color: #555; margin-top: 4px;">기능성</div>
+        </div>
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 800; color: #e74c3c;">9.5/10</div>
+          <div style="font-size: 11px; color: #555; margin-top: 4px;">보안</div>
+        </div>
+        <div style="background: #ecf0f1; padding: 12px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 20px; font-weight: 800; color: #1abc9c;">8.8/10</div>
+          <div style="font-size: 11px; color: #555; margin-top: 4px;">UX</div>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="margin-top: 20px; border-left-color: #27ae60; background: linear-gradient(135deg, #e8f8f5 0%, #d5f4e6 100%); color: #16a085;">
+        <strong>종합 평점: 9.0/10 (탁월함)</strong><br>
+        SubTrackr는 프라이버시 중심의 혁신적인 접근으로 개인 구독료 관리 시장에서
+        강력한 포지셔닝을 확보했습니다. AI 기술, 글로벌 확장성, 높은 사용자 만족도가
+        핵심 경쟁력이며, 향후 B2B 시장 진출과 AI 고도화를 통한 추가 성장이 기대됩니다.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 푸터 ── -->
+<footer>
+  <p>📅 분석 일시: 2026년 4월 9일 | 📝 보고서 형식: HTML 대시보드</p>
+  <p>본 분석은 공개된 정보를 바탕으로 작성되었으며, 정확성을 위해 최선을 다했습니다.</p>
+</footer>
+
+</body>
+</html>

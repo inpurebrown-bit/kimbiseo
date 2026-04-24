@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마케팅팀 주간회의</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: #f5f7fa;
+      color: #2c3e50;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    /* ── 뒤로가기 버튼 ── */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 16px;
+      transition: all 0.2s;
+    }
+
+    .back-button:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateX(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 32px 40px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .meeting-date {
+      font-size: 14px;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    /* ── 메인 콘텐츠 ── */
+    .content {
+      padding: 40px;
+    }
+
+    /* ── 기본 정보 섹션 ── */
+    .info-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid #eef1f6;
+    }
+
+    .info-group h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .info-group p {
+      font-size: 15px;
+      color: #2c3e50;
+      line-height: 1.8;
+    }
+
+    .info-group p strong {
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    /* ── 섹션 제목 ── */
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin-top: 32px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #667eea;
+      display: inline-block;
+    }
+
+    /* ── 논의 내용 요약 ── */
+    .summary-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 18px 20px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: #2c3e50;
+    }
+
+    .summary-box li {
+      margin: 8px 0;
+      list-style-position: inside;
+    }
+
+    .summary-box li strong {
+      color: #667eea;
+      font-weight: 700;
+    }
+
+    /* ── 액션 아이템 테이블 ── */
+    .action-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .action-table thead {
+      background: #f0f4ff;
+      border-bottom: 2px solid #667eea;
+    }
+
+    .action-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      color: #667eea;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .action-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid #eef1f6;
+      color: #2c3e50;
+    }
+
+    .action-table tbody tr:hover {
+      background: #fafcff;
+    }
+
+    .action-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── 담당자 뱃지 ── */
+    .assignee {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    /* ── 기한 뱃지 ── */
+    .deadline {
+      background: #fef3c7;
+      color: #b45309;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .deadline.urgent {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    /* ── 다음 회의 ── */
+    .next-meeting {
+      background: linear-gradient(135deg, rgba(102,126,234,0.12) 0%, rgba(118,75,162,0.08) 100%);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-top: 32px;
+      border-left: 4px solid #667eea;
+    }
+
+    .next-meeting h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #667eea;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .next-meeting p {
+      font-size: 14.5px;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    /* ── 푸터 ── */
+    .footer {
+      background: #f5f7fa;
+      padding: 16px 40px;
+      border-top: 1px solid #eef1f6;
+      font-size: 12px;
+      color: #8a94a6;
+      text-align: right;
+    }
+
+    /* ── 인쇄 스타일 ── */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .footer {
+        display: none;
+      }
+      .action-table tbody tr {
+        page-break-inside: avoid;
+      }
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .content { padding: 24px; }
+      .info-section { grid-template-columns: 1fr; gap: 20px; }
+      .action-table { font-size: 13px; }
+      .action-table th, .action-table td { padding: 10px 12px; }
+      .header { padding: 24px 24px; }
+      .header h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- ── 뒤로가기 버튼 ── -->
+  <a href="dashboard.html" class="back-button">← 대시보드로 돌아가기</a>
+
+  <!-- ── 헤더 ── -->
+  <div class="header">
+    <h1>마케팅팀 주간회의</h1>
+    <p class="meeting-date">2026년 3월 10일 (월) 오전</p>
+  </div>
+
+  <!-- ── 메인 콘텐츠 ── -->
+  <div class="content">
+
+    <!-- 기본 정보 -->
+    <div class="info-section">
+      <div class="info-group">
+        <h3>📋 참석자</h3>
+        <p>
+          <strong>김대리</strong><br>
+          <strong>이과장</strong><br>
+          <strong>박사원</strong><br>
+          <strong>정팀장</strong>
+        </p>
+      </div>
+      <div class="info-group">
+        <h3>🗓️ 회의 정보</h3>
+        <p>
+          <strong>회의명:</strong> 마케팅팀 주간회의<br>
+          <strong>날짜:</strong> 2026년 3월 10일<br>
+          <strong>시간:</strong> 오전 (정각 시간 미상)<br>
+          <strong>위치:</strong> 회의실
+        </p>
+      </div>
+    </div>
+
+    <!-- 논의 내용 요약 -->
+    <h2 class="section-title">📝 논의 내용 요약</h2>
+    <div class="summary-box">
+      <ul>
+        <li><strong>SNS 캠페인:</strong> A/B 테스트 완료 - B안(영상형)이 A안(이미지형) 대비 클릭률 2.3배 높음으로 확인되어 향후 영상 제작 기반 전환 결정</li>
+        <li><strong>콘텐츠:</strong> 블로그 콘텐츠 3건 발행 완료, 인플루언서 협업 제안서 3곳 발송 중 1곳(푸드스타일리 김OO)으로부터 긍정 회신 획득</li>
+        <li><strong>신제품 런칭:</strong> 4월 신제품 런칭에 맞춰 사전 티저 콘텐츠는 3월 넷째 주(3/24)부터 시작하기로 결정</li>
+        <li><strong>예산:</strong> 영상 광고 3개 추가 제작에 따른 영상 제작비 추가 200만원 예산 조정 요청 예정</li>
+      </ul>
+    </div>
+
+    <!-- 액션 아이템 -->
+    <h2 class="section-title">✅ 액션 아이템</h2>
+    <table class="action-table">
+      <thead>
+        <tr>
+          <th style="width: 15%;">담당자</th>
+          <th style="width: 50%;">액션 아이템</th>
+          <th style="width: 20%;">기한</th>
+          <th style="width: 15%;">상태</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="assignee">박사원</span></td>
+          <td>B안 기반으로 영상 광고 3개 추가 제작</td>
+          <td><span class="deadline">이번 주</span></td>
+          <td style="color: #667eea; font-weight: 700;">진행 중</td>
+        </tr>
+        <tr>
+          <td><span class="assignee">이과장</span></td>
+          <td>인플루언서 미팅 일정 잡기 (푸드스타일리 김OO)</td>
+          <td><span class="deadline">3월 14일</span></td>
+          <td style="color: #f59e0b; font-weight: 700;">대기</td>
+        </tr>
+        <tr>
+          <td><span class="assignee">김대리</span></td>
+          <td>3월 프로모션 기획안 초안 작성</td>
+          <td><span class="deadline urgent">3월 12일</span></td>
+          <td style="color: #dc2626; font-weight: 700;">우선순위 높음</td>
+        </tr>
+        <tr>
+          <td><span class="assignee">박사원</span></td>
+          <td>경쟁사 C사 신규 캠페인 분석</td>
+          <td><span class="deadline">이번 주</span></td>
+          <td style="color: #667eea; font-weight: 700;">진행 중</td>
+        </tr>
+        <tr>
+          <td><span class="assignee">전체</span></td>
+          <td>다음 회의: 3월 프로모션 기획안 검토</td>
+          <td><span class="deadline">3월 17일</span></td>
+          <td style="color: #8a94a6; font-weight: 700;">예정</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 다음 회의 -->
+    <div class="next-meeting">
+      <h4>🗓️ 다음 회의</h4>
+      <p><strong>일시:</strong> 2026년 3월 17일 (월) 오전 10시</p>
+    </div>
+
+  </div>
+
+  <!-- ── 푸터 ── -->
+  <div class="footer">
+    <p>이 문서는 마케팅팀 주간회의 기록입니다. 인쇄 가능한 형식으로 제공됩니다.</p>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>매출 분석 차트</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6f7f0 100%);
+      color: #2c3e50;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1a5276;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #6c757d;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .chart-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid #2980b9;
+    }
+
+    .chart-card:nth-child(2) {
+      border-top-color: #27ae60;
+    }
+
+    .chart-card h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-card h2::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: #2980b9;
+      border-radius: 2px;
+    }
+
+    .chart-card:nth-child(2) h2::before {
+      background: #27ae60;
+    }
+
+    .chart-canvas {
+      width: 100%;
+      height: 350px;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+
+    /* ── 통계 요약 ── */
+    .stats-section {
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .stats-section h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(41, 128, 185, 0.1) 0%, rgba(39, 174, 96, 0.1) 100%);
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 4px solid #2980b9;
+    }
+
+    .stat-card:nth-child(odd) { border-left-color: #2980b9; }
+    .stat-card:nth-child(even) { border-left-color: #27ae60; }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #7f8c8d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 800;
+      color: #2c3e50;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 4px;
+    }
+
+    /* ── 범례 ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 { font-size: 22px; }
+      .chart-card { padding: 16px; }
+      .chart-canvas { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📊 매출 분석 대시보드</h1>
+    <p class="subtitle">2026년 1월~2월 매출 현황</p>
+  </header>
+
+  <div class="charts-grid">
+    <!-- ① 월별 매출 추이 (선 그래프) -->
+    <div class="chart-card">
+      <h2>월별 매출 추이</h2>
+      <canvas id="lineChart" class="chart-canvas"></canvas>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #2980b9;"></div>
+          <span>월별 총 매출</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: #5dade2;"></div>
+          <span>일별 평균</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 제품별 비교 (막대 그래프) -->
+    <div class="chart-card">
+      <h2>제품별 매출 비교</h2>
+      <canvas id="barChart" class="chart-canvas"></canvas>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: #27ae60;"></div>
+          <span>제품별 총 매출액</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 요약 -->
+  <div class="stats-section">
+    <h2>📈 주요 통계</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">총 매출액</div>
+        <div class="stat-value" id="totalSales">0원</div>
+        <div class="stat-change">1월~2월 누적</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">1월 매출</div>
+        <div class="stat-value" id="janSales">0원</div>
+        <div class="stat-change">월간 합계</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">2월 매출</div>
+        <div class="stat-value" id="febSales">0원</div>
+        <div class="stat-change">월간 합계</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">최고 매출 제품</div>
+        <div class="stat-value" id="topProduct">-</div>
+        <div class="stat-change" id="topProductValue">0원</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">전자기기 비중</div>
+        <div class="stat-value" id="electronicsRatio">0%</div>
+        <div class="stat-change">카테고리별</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">거래 건수</div>
+        <div class="stat-value" id="transactionCount">0</div>
+        <div class="stat-change">총 거래</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── 데이터 정의 ──
+  const rawData = [
+    { date: '2026-01-05', product: '무선 이어폰', category: '전자기기', qty: 45, price: 89000, sales: 4005000, region: '서울' },
+    { date: '2026-01-05', product: '보조배터리', category: '전자기기', qty: 32, price: 35000, sales: 1120000, region: '서울' },
+    { date: '2026-01-05', product: '텀블러', category: '생활용품', qty: 78, price: 25000, sales: 1950000, region: '부산' },
+    { date: '2026-01-08', product: '무선 이어폰', category: '전자기기', qty: 52, price: 89000, sales: 4628000, region: '서울' },
+    { date: '2026-01-08', product: '블루투스 스피커', category: '전자기기', qty: 18, price: 120000, sales: 2160000, region: '대구' },
+    { date: '2026-01-08', product: '텀블러', category: '생활용품', qty: 65, price: 25000, sales: 1625000, region: '서울' },
+    { date: '2026-01-12', product: '보조배터리', category: '전자기기', qty: 41, price: 35000, sales: 1435000, region: '부산' },
+    { date: '2026-01-12', product: '무선 충전기', category: '전자기기', qty: 29, price: 45000, sales: 1305000, region: '서울' },
+    { date: '2026-01-12', product: '에코백', category: '생활용품', qty: 93, price: 15000, sales: 1395000, region: '대구' },
+    { date: '2026-01-15', product: '무선 이어폰', category: '전자기기', qty: 38, price: 89000, sales: 3382000, region: '부산' },
+    { date: '2026-01-15', product: '블루투스 스피커', category: '전자기기', qty: 22, price: 120000, sales: 2640000, region: '서울' },
+    { date: '2026-01-15', product: '텀블러', category: '생활용품', qty: 84, price: 25000, sales: 2100000, region: '서울' },
+    { date: '2026-01-19', product: '보조배터리', category: '전자기기', qty: 55, price: 35000, sales: 1925000, region: '대구' },
+    { date: '2026-01-19', product: '에코백', category: '생활용품', qty: 110, price: 15000, sales: 1650000, region: '서울' },
+    { date: '2026-01-19', product: '무선 충전기', category: '전자기기', qty: 33, price: 45000, sales: 1485000, region: '부산' },
+    { date: '2026-01-22', product: '무선 이어폰', category: '전자기기', qty: 61, price: 89000, sales: 5429000, region: '서울' },
+    { date: '2026-01-22', product: '텀블러', category: '생활용품', qty: 72, price: 25000, sales: 1800000, region: '대구' },
+    { date: '2026-01-22', product: '블루투스 스피커', category: '전자기기', qty: 15, price: 120000, sales: 1800000, region: '부산' },
+    { date: '2026-01-26', product: '보조배터리', category: '전자기기', qty: 48, price: 35000, sales: 1680000, region: '서울' },
+    { date: '2026-01-26', product: '에코백', category: '생활용품', qty: 88, price: 15000, sales: 1320000, region: '서울' },
+    { date: '2026-01-26', product: '무선 충전기', category: '전자기기', qty: 37, price: 45000, sales: 1665000, region: '대구' },
+    { date: '2026-02-01', product: '무선 이어폰', category: '전자기기', qty: 70, price: 89000, sales: 6230000, region: '서울' },
+    { date: '2026-02-01', product: '텀블러', category: '생활용품', qty: 95, price: 25000, sales: 2375000, region: '부산' },
+    { date: '2026-02-01', product: '보조배터리', category: '전자기기', qty: 43, price: 35000, sales: 1505000, region: '서울' },
+    { date: '2026-02-05', product: '블루투스 스피커', category: '전자기기', qty: 25, price: 120000, sales: 3000000, region: '서울' },
+    { date: '2026-02-05', product: '에코백', category: '생활용품', qty: 120, price: 15000, sales: 1800000, region: '대구' },
+    { date: '2026-02-05', product: '무선 충전기', category: '전자기기', qty: 31, price: 45000, sales: 1395000, region: '부산' },
+    { date: '2026-02-10', product: '무선 이어폰', category: '전자기기', qty: 58, price: 89000, sales: 5162000, region: '대구' },
+    { date: '2026-02-10', product: '텀블러', category: '생활용품', qty: 67, price: 25000, sales: 1675000, region: '서울' },
+    { date: '2026-02-10', product: '보조배터리', category: '전자기기', qty: 39, price: 35000, sales: 1365000, region: '서울' },
+  ];
+
+  // ── 숫자 포맷 함수 ──
+  function formatNumber(num) {
+    return num.toLocaleString('ko-KR');
+  }
+
+  // ── 데이터 분석 ──
+  function analyzeData() {
+    const monthlySales = { '1월': 0, '2월': 0 };
+    const productSales = {};
+    let electronicsTotal = 0;
+    let totalSales = 0;
+
+    rawData.forEach(item => {
+      const month = item.date.includes('01-') ? '1월' : '2월';
+      monthlySales[month] += item.sales;
+      totalSales += item.sales;
+
+      productSales[item.product] = (productSales[item.product] || 0) + item.sales;
+      if (item.category === '전자기기') electronicsTotal += item.sales;
+    });
+
+    return {
+      monthlySales,
+      productSales,
+      totalSales,
+      electronicsRatio: ((electronicsTotal / totalSales) * 100).toFixed(1),
+      transactionCount: rawData.length
+    };
+  }
+
+  const analysis = analyzeData();
+
+  // ── 통계 업데이트 ──
+  document.getElementById('totalSales').textContent = formatNumber(analysis.totalSales) + '원';
+  document.getElementById('janSales').textContent = formatNumber(analysis.monthlySales['1월']) + '원';
+  document.getElementById('febSales').textContent = formatNumber(analysis.monthlySales['2월']) + '원';
+
+  const topProduct = Object.entries(analysis.productSales).reduce((a, b) => a[1] > b[1] ? a : b);
+  document.getElementById('topProduct').textContent = topProduct[0];
+  document.getElementById('topProductValue').textContent = formatNumber(topProduct[1]) + '원';
+  document.getElementById('electronicsRatio').textContent = analysis.electronicsRatio + '%';
+  document.getElementById('transactionCount').textContent = formatNumber(analysis.transactionCount);
+
+  // ── 선 그래프 (월별 매출 추이) ──
+  function drawLineChart() {
+    const canvas = document.getElementById('lineChart');
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    const months = ['1월', '2월'];
+    const salesData = [analysis.monthlySales['1월'], analysis.monthlySales['2월']];
+    const maxSales = Math.max(...salesData);
+
+    const padding = 50;
+    const graphWidth = canvas.width - padding * 2;
+    const graphHeight = canvas.height - padding * 2;
+
+    // 그리드 선
+    ctx.strokeStyle = '#e9ecef';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padding + (graphHeight / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(canvas.width - padding, y);
+      ctx.stroke();
+    }
+
+    // Y축 레이블
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 4; i++) {
+      const value = (maxSales / 4) * (4 - i);
+      const y = padding + (graphHeight / 4) * i + 3;
+      ctx.fillText(formatNumber(Math.round(value / 1000000)) + '백만', padding - 10, y);
+    }
+
+    // 선 그래프 그리기
+    ctx.strokeStyle = '#2980b9';
+    ctx.lineWidth = 3;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    ctx.beginPath();
+    salesData.forEach((sale, i) => {
+      const x = padding + (graphWidth / (months.length - 1)) * i;
+      const y = canvas.height - padding - (sale / maxSales) * graphHeight;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // 점 그리기
+    ctx.fillStyle = '#2980b9';
+    salesData.forEach((sale, i) => {
+      const x = padding + (graphWidth / (months.length - 1)) * i;
+      const y = canvas.height - padding - (sale / maxSales) * graphHeight;
+      ctx.beginPath();
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    // X축 레이블
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.textAlign = 'center';
+    months.forEach((month, i) => {
+      const x = padding + (graphWidth / (months.length - 1)) * i;
+      const y = canvas.height - padding + 25;
+      ctx.fillText(month, x, y);
+
+      // 값 표시
+      ctx.fillStyle = '#2980b9';
+      ctx.font = 'bold 13px sans-serif';
+      const value = salesData[i];
+      const textY = canvas.height - padding - (value / maxSales) * graphHeight - 15;
+      ctx.fillText(formatNumber(Math.round(value / 1000000)) + '백만', x, textY);
+      ctx.fillStyle = '#2c3e50';
+    });
+  }
+
+  // ── 막대 그래프 (제품별 비교) ──
+  function drawBarChart() {
+    const canvas = document.getElementById('barChart');
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    const products = Object.keys(analysis.productSales);
+    const salesData = Object.values(analysis.productSales);
+    const maxSales = Math.max(...salesData);
+
+    const padding = 50;
+    const graphWidth = canvas.width - padding * 2;
+    const graphHeight = canvas.height - padding * 2;
+    const barWidth = graphWidth / products.length;
+
+    // 그리드 선
+    ctx.strokeStyle = '#e9ecef';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padding + (graphHeight / 4) * i;
+      ctx.beginPath();
+      ctx.moveTo(padding, y);
+      ctx.lineTo(canvas.width - padding, y);
+      ctx.stroke();
+    }
+
+    // Y축 레이블
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'right';
+    for (let i = 0; i <= 4; i++) {
+      const value = (maxSales / 4) * (4 - i);
+      const y = padding + (graphHeight / 4) * i + 3;
+      ctx.fillText(formatNumber(Math.round(value / 1000000)) + '백만', padding - 10, y);
+    }
+
+    // 막대 그리기
+    const colors = ['#27ae60', '#229954', '#1e8449', '#196f3d', '#145a32', '#0d3b2f'];
+    salesData.forEach((sale, i) => {
+      const x = padding + barWidth * i + barWidth * 0.15;
+      const height = (sale / maxSales) * graphHeight;
+      const y = canvas.height - padding - height;
+      const width = barWidth * 0.7;
+
+      // 그라디언트
+      const gradient = ctx.createLinearGradient(0, y, 0, canvas.height - padding);
+      gradient.addColorStop(0, colors[i % colors.length]);
+      gradient.addColorStop(1, '#27ae60');
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x, y, width, height);
+
+      // 값 표시
+      ctx.fillStyle = '#2c3e50';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      const valueText = formatNumber(Math.round(sale / 1000000)) + '백만';
+      ctx.fillText(valueText, x + width / 2, y - 8);
+    });
+
+    // X축 레이블
+    ctx.fillStyle = '#2c3e50';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    products.forEach((product, i) => {
+      const x = padding + barWidth * i + barWidth * 0.5;
+      const y = canvas.height - padding + 25;
+      ctx.fillText(product, x, y);
+    });
+  }
+
+  // 차트 그리기
+  drawLineChart();
+  drawBarChart();
+
+  // 윈도우 리사이즈 시 차트 다시 그리기
+  window.addEventListener('resize', () => {
+    drawLineChart();
+    drawBarChart();
+  });
+</script>
+
+</body>
+</html>
