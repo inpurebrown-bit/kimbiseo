@@ -18,7 +18,7 @@ const SAMPLE_RESPONSES = {
   default: '죄송합니다. 더 자세한 답변을 위해서는 구체적인 질문을 해주세요!',
 };
 
-export function ChatInput() {
+export default function ChatInput() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '0',
@@ -79,7 +79,7 @@ export function ChatInput() {
     return SAMPLE_RESPONSES.default;
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -90,11 +90,12 @@ export function ChatInput() {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const userInput = input;
     setInput('');
     setLoading(true);
 
     setTimeout(() => {
-      const response = getResponse(input);
+      const response = getResponse(userInput);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -107,28 +108,49 @@ export function ChatInput() {
   };
 
   return (
-    <div className="glass-card p-6 mb-6 w-full">
-      {/* 채팅 제목 */}
-      <h2 className="text-lg font-bold text-primary mb-4">🤖 김비서 AI 어시스턴트</h2>
+    <div style={{
+      background: 'rgba(255, 255, 255, 0.62)',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255, 255, 255, 0.75)',
+      borderRadius: '12px',
+      padding: '24px',
+      marginBottom: '24px',
+      width: '100%'
+    }} className="dark:bg-opacity-5">
+      <h2 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px' }}>
+        🤖 김비서 AI 어시스턴트
+      </h2>
 
-      {/* 메시지 영역 */}
-      <div className="flex flex-col gap-4 mb-4 max-h-64 overflow-y-auto">
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        marginBottom: '16px',
+        maxHeight: '256px',
+        overflowY: 'auto'
+      }}>
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`flex ${
-              message.role === 'user' ? 'justify-end' : 'justify-start'
-            } animate-fade-in`}
+            style={{
+              display: 'flex',
+              justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+            }}
           >
-            <div
-              className={`max-w-sm px-4 py-3 rounded-lg text-sm ${
-                message.role === 'user'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-br-none'
-                  : 'glass-input text-secondary rounded-bl-none'
-              }`}
-            >
-              <p className="whitespace-pre-wrap">{message.content}</p>
-              <p className="text-xs opacity-60 mt-1">
+            <div style={{
+              maxWidth: '400px',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              fontSize: '14px',
+              background: message.role === 'user'
+                ? 'linear-gradient(to right, #4f46e5, #9333ea)'
+                : 'rgba(255, 255, 255, 0.62)',
+              color: message.role === 'user' ? 'white' : 'inherit',
+              borderBottomRightRadius: message.role === 'user' ? '0' : '8px',
+              borderBottomLeftRadius: message.role === 'user' ? '8px' : '0',
+            }}>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{message.content}</p>
+              <p style={{ fontSize: '12px', opacity: 0.6, marginTop: '4px' }}>
                 {message.timestamp.toLocaleTimeString('ko-KR', {
                   hour: '2-digit',
                   minute: '2-digit',
@@ -139,26 +161,35 @@ export function ChatInput() {
         ))}
 
         {loading && (
-          <div className="flex justify-start">
-            <div className="glass-input px-4 py-3 rounded-lg">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
-                <div
-                  className="w-2 h-2 bg-primary rounded-full animate-bounce"
-                  style={{ animationDelay: '0.2s' }}
-                ></div>
-                <div
-                  className="w-2 h-2 bg-primary rounded-full animate-bounce"
-                  style={{ animationDelay: '0.4s' }}
-                ></div>
-              </div>
-            </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#667eea',
+              animation: 'bounce 1.4s infinite'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#667eea',
+              animation: 'bounce 1.4s infinite',
+              animationDelay: '0.2s'
+            }} />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#667eea',
+              animation: 'bounce 1.4s infinite',
+              animationDelay: '0.4s'
+            }} />
           </div>
         )}
       </div>
 
-      {/* 입력 영역 */}
-      <div className="flex gap-2">
+      <div style={{ display: 'flex', gap: '8px' }}>
         <input
           type="text"
           value={input}
@@ -169,14 +200,30 @@ export function ChatInput() {
               handleSendMessage();
             }
           }}
-          placeholder="메시지를 입력하세요... (할일, 일정, 프로젝트, 매출 등)"
+          placeholder="메시지를 입력하세요..."
           disabled={loading}
-          className="glass-input flex-1 px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+          style={{
+            flex: 1,
+            padding: '8px 16px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.75)',
+            background: 'rgba(255, 255, 255, 0.62)',
+            fontSize: '14px',
+            opacity: loading ? 0.5 : 1,
+          }}
         />
         <button
           onClick={handleSendMessage}
           disabled={loading || !input.trim()}
-          className="glass-input px-4 py-2 rounded-lg font-medium transition-all disabled:opacity-50 hover:scale-105 active:scale-95"
+          style={{
+            padding: '8px 16px',
+            borderRadius: '8px',
+            border: '1px solid rgba(255, 255, 255, 0.75)',
+            background: 'rgba(255, 255, 255, 0.62)',
+            fontWeight: 500,
+            cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
+            opacity: loading || !input.trim() ? 0.5 : 1,
+          }}
         >
           {loading ? '...' : '전송'}
         </button>
@@ -184,5 +231,3 @@ export function ChatInput() {
     </div>
   );
 }
-
-export default ChatInput;
