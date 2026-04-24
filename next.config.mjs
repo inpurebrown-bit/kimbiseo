@@ -1,6 +1,5 @@
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   // 엄격한 모드 활성화 (개발 중 잠재적 문제 감지)
   reactStrictMode: true,
 
