@@ -12,60 +12,74 @@ export function Header() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
-    // 현재 날짜 포맷팅 (예: Mon, Mar 10, 2026)
+    // 현재 날짜 포맷팅 (예: 2026년 3월 10일 (월))
     const date = new Date();
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+    const formatter = new Intl.DateTimeFormat('ko-KR', {
       year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'short',
     });
-    setCurrentDate(formatter.format(date));
+    const formatted = formatter.format(date);
+    setCurrentDate(formatted);
   }, []);
 
+  const navItems = [
+    { icon: '💬', label: '채팅', action: 'chat' },
+    { icon: '📊', label: '대시보드', href: '/' },
+    { icon: '📖', label: '회의록', href: '#' },
+    { icon: '💰', label: '매출 현황', href: '#' },
+    { icon: '🎯', label: '업무 현황', href: '#' },
+    { icon: '📈', label: '분석', href: '#' },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 glass-card mx-6 mt-6 mb-0 rounded-b-none py-4 px-6">
-      <div className="flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-4 px-6 shadow-lg">
+      {/* 상단 헤더 */}
+      <div className="flex items-center justify-between mb-4">
         {/* 좌측: 로고 및 제목 */}
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
-            K
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-primary">김비서</h1>
-            <p className="text-xs text-secondary">업무 관리 대시보드</p>
-          </div>
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">✨</span>
+          <h1 className="text-xl font-bold text-white">김비서 대시보드</h1>
         </div>
 
         {/* 중앙: 현재 날짜 */}
-        <div className="hidden md:block">
-          <p className="text-sm font-medium text-secondary">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30">
+          <span className="text-white font-medium text-sm">
             {currentDate || 'Loading...'}
-          </p>
+          </span>
         </div>
 
-        {/* 우측: 버튼들 */}
-        <div className="flex items-center gap-2">
-          {/* 채팅 버튼 */}
-          <button
-            onClick={() => setIsChatOpen(true)}
-            className="glass-input px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-opacity-80 focus:ring-2 focus:ring-primary focus:outline-none"
-            aria-label="AI 채팅 열기"
-            title="김비서 AI 어시스턴트"
-          >
-            💬
-          </button>
+        {/* 우측: 테마 토글 */}
+        <button
+          onClick={toggleTheme}
+          className="px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white font-medium transition-all hover:bg-white/30"
+          aria-label="테마 전환"
+          title={`${theme === 'light' ? '다크' : '라이트'} 모드로 전환`}
+        >
+          {theme === 'light' ? '🌙 다크 모드' : '☀️ 라이트 모드'}
+        </button>
+      </div>
 
-          {/* 테마 토글 버튼 */}
+      {/* 네비게이션 버튼 행 */}
+      <div className="flex items-center gap-3 flex-wrap">
+        {navItems.map((item) => (
           <button
-            onClick={toggleTheme}
-            className="glass-input px-4 py-2 rounded-lg font-medium transition-all duration-300 hover:bg-opacity-80 focus:ring-2 focus:ring-primary focus:outline-none"
-            aria-label="테마 전환"
-            title={`${theme === 'light' ? '다크' : '라이트'} 모드로 전환`}
+            key={item.label}
+            onClick={() => {
+              if (item.action === 'chat') {
+                setIsChatOpen(true);
+              } else if (item.href) {
+                window.location.href = item.href;
+              }
+            }}
+            className="px-4 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white font-medium transition-all hover:bg-white/30 hover:scale-105 active:scale-95 flex items-center gap-2 text-sm"
+            title={item.label}
           >
-            {theme === 'light' ? '🌙' : '☀️'}
+            <span className="text-lg">{item.icon}</span>
+            <span className="hidden sm:inline">{item.label}</span>
           </button>
-        </div>
+        ))}
       </div>
 
       {/* ChatBot 모달 */}
