@@ -30,56 +30,101 @@ export default function ChatInput() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const getResponse = (userInput: string): string => {
-    const lowerInput = userInput.toLowerCase();
+  const getResponse = async (userInput: string): Promise<string> => {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-    if (
-      lowerInput.includes('안녕') ||
-      lowerInput.includes('hello') ||
-      lowerInput.includes('안녕하')
-    ) {
-      return SAMPLE_RESPONSES.greeting;
+      if (!apiKey) {
+        return SAMPLE_RESPONSES.greeting;
+      }
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: userInput,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const lowerInput = userInput.toLowerCase();
+
+        if (
+          lowerInput.includes('안녕') ||
+          lowerInput.includes('hello') ||
+          lowerInput.includes('안녕하')
+        ) {
+          return SAMPLE_RESPONSES.greeting;
+        }
+
+        if (
+          lowerInput.includes('할 일') ||
+          lowerInput.includes('todo') ||
+          lowerInput.includes('업무') ||
+          lowerInput.includes('task')
+        ) {
+          return SAMPLE_RESPONSES.todo;
+        }
+
+        if (
+          lowerInput.includes('일정') ||
+          lowerInput.includes('schedule') ||
+          lowerInput.includes('회의') ||
+          lowerInput.includes('meeting')
+        ) {
+          return SAMPLE_RESPONSES.schedule;
+        }
+
+        if (
+          lowerInput.includes('프로젝트') ||
+          lowerInput.includes('project') ||
+          lowerInput.includes('진행')
+        ) {
+          return SAMPLE_RESPONSES.project;
+        }
+
+        if (
+          lowerInput.includes('매출') ||
+          lowerInput.includes('sales') ||
+          lowerInput.includes('판매') ||
+          lowerInput.includes('revenue')
+        ) {
+          return SAMPLE_RESPONSES.sales;
+        }
+
+        return SAMPLE_RESPONSES.default;
+      }
+
+      const data = await response.json();
+      const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      return textContent || SAMPLE_RESPONSES.default;
+    } catch (error) {
+      console.error('Gemini API 에러:', error);
+      return SAMPLE_RESPONSES.default;
     }
-
-    if (
-      lowerInput.includes('할 일') ||
-      lowerInput.includes('todo') ||
-      lowerInput.includes('업무') ||
-      lowerInput.includes('task')
-    ) {
-      return SAMPLE_RESPONSES.todo;
-    }
-
-    if (
-      lowerInput.includes('일정') ||
-      lowerInput.includes('schedule') ||
-      lowerInput.includes('회의') ||
-      lowerInput.includes('meeting')
-    ) {
-      return SAMPLE_RESPONSES.schedule;
-    }
-
-    if (
-      lowerInput.includes('프로젝트') ||
-      lowerInput.includes('project') ||
-      lowerInput.includes('진행')
-    ) {
-      return SAMPLE_RESPONSES.project;
-    }
-
-    if (
-      lowerInput.includes('매출') ||
-      lowerInput.includes('sales') ||
-      lowerInput.includes('판매') ||
-      lowerInput.includes('revenue')
-    ) {
-      return SAMPLE_RESPONSES.sales;
-    }
-
-    return SAMPLE_RESPONSES.default;
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -94,8 +139,8 @@ export default function ChatInput() {
     setInput('');
     setLoading(true);
 
-    setTimeout(() => {
-      const response = getResponse(userInput);
+    try {
+      const response = await getResponse(userInput);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -103,8 +148,9 @@ export default function ChatInput() {
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   return (
